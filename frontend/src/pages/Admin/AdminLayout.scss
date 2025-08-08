@@ -1,0 +1,43 @@
+@import '../../styles/variables';
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: lighten($beige, 5%);
+
+  &-sidebar {
+    width: 250px;
+    background: $midnight-black;
+    padding: $spacing-xl $spacing-md;
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      a {
+        color: $beige;
+        text-decoration: none;
+        font-family: $font-main;
+        padding: $spacing-sm;
+        border-radius: 4px;
+        transition: background 0.3s;
+
+        &:hover {
+          background: rgba($pure-white, 0.1);
+        }
+
+        &.active {
+          background: $primary;
+          color: $midnight-black;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &-main {
+    flex: 1;
+    padding: $spacing-xl;
+  }
+}

@@ -1,0 +1,47 @@
+@import '../../styles/variables';
+
+.blog-posts {
+  display: grid;
+  gap: $spacing-lg;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+
+  &-card {
+    background: $beige;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba($pure-black, 0.1);
+
+    &-image {
+      height: 200px;
+      background: $dark-grey;
+    }
+
+    &-content {
+      padding: $spacing-md;
+
+      h3 {
+        font-family: $font-heading;
+        color: $midnight-black;
+        margin-bottom: $spacing-sm;
+      }
+
+      p {
+        font-family: $font-main;
+        color: $dark-grey;
+        margin-bottom: $spacing-md;
+      }
+
+      .read-more {
+        color: $primary;
+        font-family: $font-main;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

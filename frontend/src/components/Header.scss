@@ -1,0 +1,34 @@
+@import '../styles/variables';
+
+.header {
+  background: $midnight-black;
+  padding: $spacing-md $spacing-lg;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  &-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  nav {
+    display: flex;
+    gap: $spacing-lg;
+
+    a {
+      color: $beige;
+      text-decoration: none;
+      font-family: $font-main;
+      font-weight: 600;
+      transition: color 0.3s;
+
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+}

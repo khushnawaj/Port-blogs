@@ -1,0 +1,16 @@
+.skill {
+  margin: 1rem 0;
+
+  &-bar {
+    height: 10px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  &-level {
+    height: 100%;
+    background-color: #3498db;
+    transition: width 0.5s ease;
+  }
+}

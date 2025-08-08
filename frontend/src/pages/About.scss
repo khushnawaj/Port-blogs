@@ -1,0 +1,26 @@
+@import '../styles/variables';
+
+.about {
+  background: $beige;
+  padding: $spacing-xl 0;
+
+  &-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-lg;
+  }
+
+  .skills {
+    margin-top: $spacing-xl;
+
+    &-item {
+      margin-bottom: $spacing-lg;
+
+      h3 {
+        font-family: $font-main;
+        color: $text-color;
+        margin-bottom: $spacing-xs;
+      }
+    }
+  }
+}

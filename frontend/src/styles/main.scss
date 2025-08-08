@@ -1,0 +1,151 @@
+// Variables
+$primary: #3498db;
+$text: #333;
+
+// Base Styles
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  color: $text;
+}
+
+header {
+  background: #f8f9fa;
+  padding: 1rem;
+  nav {
+    display: flex;
+    gap: 1rem;
+    a {
+      color: $primary;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Buttons
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  &-primary {
+    background: $primary;
+    color: white;
+  }
+}
+
+/* Header Styles */
+.header {
+  background: #2c3e50;
+  padding: 1rem;
+  
+  nav {
+    display: flex;
+    gap: 1rem;
+    
+    a {
+      color: white;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+/* Footer Styles */
+.footer {
+  background: #34495e;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.projects {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.project-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.project-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+//contacts
+.contact {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  textarea {
+    height: 150px;
+  }
+}
+
+button {
+  background: #2c3e50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background: #34495e;
+  }
+}
+//skills
+.skills {
+  margin-top: 2rem;
+}
+
+.skill-item {
+  margin-bottom: 1rem;
+}
+
+.skill-bar {
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.skill-progress {
+  height: 100%;
+  background: #2c3e50;
+  color: white;
+  text-align: right;
+  padding-right: 10px;
+  font-size: 12px;
+  line-height: 20px;
+}

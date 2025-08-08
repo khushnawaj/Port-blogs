@@ -1,0 +1,68 @@
+@import '../../styles/variables';
+
+.post-approval {
+  &-header {
+    margin-bottom: $spacing-xl;
+
+    h2 {
+      font-family: $font-heading;
+      color: $midnight-black;
+    }
+  }
+
+  &-list {
+    background: $pure-white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba($pure-black, 0.1);
+  }
+
+  &-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md;
+    border-bottom: 1px solid rgba($dark-grey, 0.1);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &-info {
+      h4 {
+        font-family: $font-heading;
+        color: $midnight-black;
+        margin-bottom: $spacing-xs;
+      }
+
+      p {
+        font-family: $font-main;
+        color: $dark-grey;
+      }
+    }
+
+    &-actions {
+      display: flex;
+      gap: $spacing-sm;
+
+      button {
+        padding: $spacing-xs $spacing-sm;
+        border: none;
+        border-radius: 4px;
+        font-family: $font-main;
+        font-weight: 600;
+        cursor: pointer;
+
+        &.approve {
+          background: lighten($primary, 10%);
+          color: $midnight-black;
+        }
+
+        &.reject {
+          background: lighten($dark-grey, 50%);
+          color: $midnight-black;
+        }
+      }
+    }
+  }
+}

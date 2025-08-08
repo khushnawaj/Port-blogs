@@ -1,0 +1,9 @@
+@import '../styles/variables';
+
+.footer {
+  background: $secondary;
+  color: $pure-white;
+  padding: $spacing-md 0;
+  text-align: center;
+  /* Remove position: fixed */
+}

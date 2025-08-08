@@ -1,0 +1,62 @@
+@import '../styles/variables';
+
+.projects {
+  background: $pure-white;
+  padding: $spacing-xl 0;
+
+  &-header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+
+    h2 {
+      font-family: $font-heading;
+      color: $midnight-black;
+      font-size: 2.5rem;
+    }
+  }
+
+  &-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: $spacing-lg;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-md;
+  }
+
+  &-card {
+    background: $beige;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba($pure-black, 0.1);
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    &-image {
+      height: 200px;
+      background: $dark-grey;
+    }
+
+    &-content {
+      padding: $spacing-md;
+
+      h3 {
+        color: $midnight-black;
+        font-family: $font-heading;
+        margin-bottom: $spacing-sm;
+      }
+
+      p {
+        color: $dark-grey;
+        font-family: $font-main;
+      }
+
+      .btn {
+        margin-top: $spacing-md;
+      }
+    }
+  }
+}

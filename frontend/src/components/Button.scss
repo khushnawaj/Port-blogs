@@ -1,0 +1,31 @@
+@import '../styles/variables';
+
+.btn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: 4px;
+  font-family: $font-main;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+
+  &-primary {
+    background: $primary;
+    color: $midnight-black;
+
+    &:hover {
+      background: darken($primary, 10%);
+    }
+  }
+
+  &-outline {
+    background: transparent;
+    border-color: $primary;
+    color: $primary;
+
+    &:hover {
+      background: $primary;
+      color: $midnight-black;
+    }
+  }
+}

@@ -1,0 +1,252 @@
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+const ErrorResponse = require('../utils/errorResponse');
+const logger = require('../utils/logger');
+
+// Directory for temporary PDF files
+const PDF_DIR = path.join(__dirname, '../../public/temp-pdfs');
+
+// Ensure directory exists
+if (!fs.existsSync(PDF_DIR)) {
+  fs.mkdirSync(PDF_DIR, { recursive: true });
+}
+
+/**
+ * Generate resume PDF from data
+ * @param {Object} resumeData - Resume data
+ * @param {String} templateName - Template identifier
+ * @returns {Promise<Buffer>} - PDF buffer
+ */
+const generateResumePDF = async (resumeData, templateName = 'default') => {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({
+        size: 'A4',
+        margin: 50,
+        bufferPages: true
+      });
+
+      const buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => resolve(Buffer.concat(buffers)));
+      doc.on('error', reject);
+
+      // Apply template
+      applyTemplate(doc, templateName, resumeData);
+
+      // Add content
+      addResumeContent(doc, resumeData);
+
+      doc.end();
+    } catch (error) {
+      logger.error('PDF generation error:', error);
+      throw new ErrorResponse('Failed to generate PDF', 500);
+    }
+  });
+};
+
+/**
+ * Apply template styling to the document
+ * @param {PDFDocument} doc - PDF document instance
+ * @param {String} templateName - Template identifier
+ * @param {Object} resumeData - Resume data
+ */
+const applyTemplate = (doc, templateName, resumeData) => {
+  // Default template
+  doc.font('Helvetica');
+  doc.fontSize(12);
+  
+  // Template-specific styling
+  switch (templateName) {
+    case 'modern':
+      doc.font('Helvetica-Bold');
+      doc.fillColor('#2c3e50');
+      break;
+    case 'classic':
+      doc.font('Times-Roman');
+      doc.fillColor('#000000');
+      break;
+    case 'creative':
+      doc.font('Courier');
+      doc.fillColor('#8e44ad');
+      break;
+    default:
+      // Default template
+      doc.font('Helvetica');
+      doc.fillColor('#333333');
+  }
+};
+
+/**
+ * Add resume content to the PDF
+ * @param {PDFDocument} doc - PDF document instance
+ * @param {Object} resumeData - Resume data
+ */
+const addResumeContent = (doc, resumeData) => {
+  // Header section
+  doc.fontSize(24)
+     .text(resumeData.name, { align: 'center' })
+     .moveDown(0.5);
+  
+  if (resumeData.title) {
+    doc.fontSize(16)
+       .text(resumeData.title, { align: 'center' })
+       .moveDown(0.5);
+  }
+
+  // Contact information
+  if (resumeData.contact) {
+    doc.fontSize(10)
+       .text(formatContactInfo(resumeData.contact), { align: 'center', lineGap: 5 })
+       .moveDown(1);
+  }
+
+  // Add horizontal line
+  doc.moveTo(50, doc.y)
+     .lineTo(550, doc.y)
+     .stroke()
+     .moveDown(1);
+
+  // Summary section
+  if (resumeData.summary) {
+    doc.fontSize(14)
+       .text('PROFILE', { underline: true })
+       .moveDown(0.3);
+    doc.fontSize(11)
+       .text(resumeData.summary, { align: 'justify' })
+       .moveDown(1);
+  }
+
+  // Experience section
+  if (resumeData.experience && resumeData.experience.length > 0) {
+    doc.addPage()
+       .fontSize(14)
+       .text('EXPERIENCE', { underline: true })
+       .moveDown(0.5);
+    
+    resumeData.experience.forEach(exp => {
+      doc.fontSize(12)
+         .text(`${exp.position} at ${exp.company}`, { continued: true })
+         .text(formatDateRange(exp.startDate, exp.endDate), { align: 'right' })
+         .moveDown(0.2);
+      
+      doc.fontSize(10)
+         .text(exp.description, { align: 'justify' })
+         .moveDown(0.5);
+    });
+  }
+
+  // Education section
+  if (resumeData.education && resumeData.education.length > 0) {
+    doc.addPage()
+       .fontSize(14)
+       .text('EDUCATION', { underline: true })
+       .moveDown(0.5);
+    
+    resumeData.education.forEach(edu => {
+      doc.fontSize(12)
+         .text(`${edu.degree} at ${edu.institution}`, { continued: true })
+         .text(formatDateRange(edu.startDate, edu.endDate), { align: 'right' })
+         .moveDown(0.2);
+      
+      if (edu.fieldOfStudy) {
+        doc.fontSize(10)
+           .text(`Field: ${edu.fieldOfStudy}`)
+           .moveDown(0.5);
+      }
+    });
+  }
+
+  // Skills section
+  if (resumeData.skills && resumeData.skills.length > 0) {
+    doc.addPage()
+       .fontSize(14)
+       .text('SKILLS', { underline: true })
+       .moveDown(0.5);
+    
+    resumeData.skills.forEach(skill => {
+      doc.fontSize(11)
+         .text(`${skill.name}: ${skill.proficiency}%`)
+         .moveDown(0.3);
+      
+      // Skill bar visualization
+      const barWidth = 400 * (skill.proficiency / 100);
+      doc.rect(50, doc.y, barWidth, 10)
+         .fill('#3498db')
+         .moveDown(0.5);
+    });
+  }
+
+  // Footer
+  doc.addPage()
+     .fontSize(8)
+     .text('Generated by Portfolio App', { align: 'center' });
+};
+
+/**
+ * Format contact information
+ * @param {Object} contact - Contact details
+ * @returns {String} - Formatted contact string
+ */
+const formatContactInfo = (contact) => {
+  const parts = [];
+  if (contact.email) parts.push(`Email: ${contact.email}`);
+  if (contact.phone) parts.push(`Phone: ${contact.phone}`);
+  if (contact.linkedin) parts.push(`LinkedIn: ${contact.linkedin}`);
+  if (contact.github) parts.push(`GitHub: ${contact.github}`);
+  if (contact.website) parts.push(`Website: ${contact.website}`);
+  return parts.join(' | ');
+};
+
+/**
+ * Format date range
+ * @param {String|Date} startDate - Start date
+ * @param {String|Date} endDate - End date
+ * @returns {String} - Formatted date range
+ */
+const formatDateRange = (startDate, endDate) => {
+  const start = new Date(startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+  const end = endDate ? 
+    new Date(endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : 
+    'Present';
+  return `${start} - ${end}`;
+};
+
+/**
+ * Save PDF to file and return path
+ * @param {Buffer} pdfBuffer - PDF data
+ * @param {String} filename - Desired filename
+ * @returns {Promise<String>} - Path to saved PDF
+ */
+const savePDFToFile = async (pdfBuffer, filename) => {
+  try {
+    const filePath = path.join(PDF_DIR, filename);
+    await fs.promises.writeFile(filePath, pdfBuffer);
+    return `/temp-pdfs/${filename}`;
+  } catch (error) {
+    logger.error('PDF save error:', error);
+    throw new ErrorResponse('Failed to save PDF', 500);
+  }
+};
+
+/**
+ * Delete temporary PDF file
+ * @param {String} filePath - File path to delete
+ * @returns {Promise}
+ */
+const deletePDFFile = async (filePath) => {
+  try {
+    const fullPath = path.join(__dirname, '../../public', filePath);
+    await fs.promises.unlink(fullPath);
+  } catch (error) {
+    logger.error('PDF delete error:', error);
+    // Don't throw error for failed deletes
+  }
+};
+
+module.exports = {
+  generateResumePDF,
+  savePDFToFile,
+  deletePDFFile
+};

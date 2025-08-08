@@ -1,0 +1,29 @@
+@import '../styles/variables';
+
+.home {
+  background: $background-color;
+  min-height: 80vh;
+  padding: $spacing-xl 0;
+
+  &-hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: $spacing-xl $spacing-lg;
+    text-align: center;
+
+    h1 {
+      font-family: $font-heading;
+      font-size: 3.5rem;
+      color: $text-color;
+      margin-bottom: $spacing-md;
+    }
+
+    p {
+      font-family: $font-main;
+      font-size: 1.25rem;
+      color: $dark-grey;
+      max-width: 800px;
+      margin: 0 auto $spacing-xl;
+    }
+  }
+}
