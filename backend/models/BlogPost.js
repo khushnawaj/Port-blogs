@@ -66,5 +66,10 @@ BlogPostSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
+BlogPostSchema.index({ 
+  title: 'text', 
+  content: 'text', 
+  tags: 'text' 
+});
 
 module.exports = mongoose.model('BlogPost', BlogPostSchema);

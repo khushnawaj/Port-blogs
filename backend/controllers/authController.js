@@ -124,3 +124,11 @@ const sendTokenResponse = (user, statusCode, res) => {
       token
     });
 };
+
+// After registration
+const verifyToken = crypto.randomBytes(20).toString('hex');
+user.verifyToken = crypto.createHash('sha256').update(verifyToken).digest('hex');
+user.verifyTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+await user.save({ validateBeforeSave: false });
+
+const verifyUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/verifyemail/${verifyToken}`;

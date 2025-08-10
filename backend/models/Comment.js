@@ -20,6 +20,9 @@ const CommentSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  approvedAt: {
+  type: Date
+},
   createdAt: {
     type: Date,
     default: Date.now

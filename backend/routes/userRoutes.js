@@ -7,11 +7,19 @@ const {
     deleteUser
 } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/auth');
+const { 
+  uploadUserPhoto, 
+  updateProfile,
+  changePassword
+} = require('../controllers/userController');
 
 const router = express.Router();
 
 router.use(protect);
 router.use(authorize('admin'));
+router.put('/profile', protect, updateProfile);
+router.put('/changepassword', protect, changePassword);
+router.put('/photo', protect, upload.single('photo'), uploadUserPhoto);
 
 router
     .route('/')

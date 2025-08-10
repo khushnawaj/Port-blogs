@@ -1,12 +1,11 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-const RequireAuth = ({ children }) => {
-  // In a real app, you would check auth state here
-  const isAuthenticated = true; // Temporary - replace with real auth check
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+const RequireAuth = ({ children, adminOnly}) => {
+  const { user } = useAuth();
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (adminOnly && !user.role !== 'admin') return <Navigate to="/"  />;
 
   return children;
 };

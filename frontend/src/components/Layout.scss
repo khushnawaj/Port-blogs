@@ -3,12 +3,15 @@
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background: $background-color;
-  color: $text-color;
-  font-family: $font-main;
-
+  min-height: 100vh; // Ensures layout fills viewport
+  
   main {
-    flex: 1;
+    flex: 1; // Takes remaining space
+    padding-top: 80px; // Prevents header overlap
   }
+}
+.content-area {
+  /* No flex needed - normal document flow */
+  padding-top: 80px; /* Offset for sticky header */
+  min-height: calc(100vh - 80px - 200px); /* Viewport - header - footer */
 }

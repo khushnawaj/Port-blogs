@@ -9,6 +9,7 @@ const {
 } = require('../controllers/blogController');
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const { searchBlogPosts, approveBlogPost } = require('../controllers/blogController');
 
 const router = express.Router();
 
@@ -24,5 +25,7 @@ router
   .delete(protect, deleteBlogPost);
 
 router.route('/:id/image').put(protect, upload, uploadBlogImage);
+router.get('/search', searchBlogPosts);
+router.put('/:id/approve', protect, authorize('admin'), approveBlogPost);
 
 module.exports = router;

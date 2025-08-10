@@ -262,3 +262,13 @@ const sendTokenResponse = (user, statusCode, res) => {
       token
     });
 };
+
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+// Apply to auth routes
+router.post('/login', limiter, login);

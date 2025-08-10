@@ -22,3 +22,21 @@ $spacing-sm: 0.5rem;  // ~8px
 $spacing-md: 1rem;    // ~16px
 $spacing-lg: 2rem;    // ~32px
 $spacing-xl: 4rem;    // ~64px
+
+
+// Animations
+$transition-fast: all 0.3s ease;
+$transition-medium: all 0.6s ease;
+$transition-slow: all 1s ease;
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

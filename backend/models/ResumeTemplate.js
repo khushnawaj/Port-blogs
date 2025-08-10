@@ -20,6 +20,10 @@ const ResumeTemplateSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  version: {
+  type: String,
+  required: true
+},
   createdAt: {
     type: Date,
     default: Date.now

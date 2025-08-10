@@ -16,6 +16,17 @@ const portfolioRoutes = require('./routes/portfolioRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const userRoutes = require('./routes/userRoutes');
 
+// Add to app.js
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "'unsafe-inline'", 'cdn.example.com'],
+    styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+    imgSrc: ["'self'", 'data:', 'cdn.example.com'],
+    fontSrc: ["'self'", 'fonts.gstatic.com']
+  }
+}));
+
 const app = express();
 
 // Body parser

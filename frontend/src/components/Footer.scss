@@ -1,9 +1,121 @@
 @import '../styles/variables';
 
 .footer {
-  background: $secondary;
-  color: $pure-white;
-  padding: $spacing-md 0;
-  text-align: center;
-  /* Remove position: fixed */
+  background: $midnight-black;
+  color: $beige;
+  padding: $spacing-xl 0;
+  border-top: 1px solid rgba($primary, 0.3);
+  margin-top: $spacing-xl; // Space above footer
+
+  &-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-lg;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr; // Balanced columns
+    gap: $spacing-xl;
+  }
+
+  &-brand {
+    .logo {
+      color: $primary;
+      font-family: $font-heading;
+      font-size: 1.5rem;
+      margin-bottom: $spacing-md;
+      display: inline-block;
+    }
+    
+    p {
+      color: rgba($beige, 0.7);
+      line-height: 1.6;
+      max-width: 80%;
+    }
+  }
+
+  &-nav {
+    h3 {
+      color: $primary;
+      font-family: $font-heading;
+      margin-bottom: $spacing-md;
+      font-size: 1.1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin-bottom: $spacing-sm;
+
+        a {
+          color: $beige;
+          text-decoration: none;
+          transition: color 0.3s;
+
+          &:hover {
+            color: $primary;
+          }
+        }
+      }
+    }
+  }
+
+  &-contact {
+    h3 {
+      color: $primary;
+      font-family: $font-heading;
+      margin-bottom: $spacing-md;
+      font-size: 1.1rem;
+    }
+
+    .email {
+      color: $beige;
+      margin: $spacing-md 0;
+      display: block;
+    }
+  }
+
+  &-social {
+    display: flex;
+    gap: $spacing-md;
+    margin-top: $spacing-md;
+
+    a {
+      color: $beige;
+      background: rgba($pure-white, 0.1);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+
+      &:hover {
+        background: $primary;
+        color: $midnight-black;
+        transform: translateY(-3px);
+      }
+    }
+  }
+
+  &-bottom {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba($primary, 0.1);
+    color: rgba($beige, 0.5);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    &-container {
+      grid-template-columns: 1fr;
+    }
+
+    &-brand p {
+      max-width: 100%;
+    }
+  }
 }

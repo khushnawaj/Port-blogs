@@ -1,11 +1,14 @@
 @import '../styles/variables';
 
 .header {
-  background: $midnight-black;
-  padding: $spacing-md $spacing-lg;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  width: 100%;
+  background: rgba($midnight-black, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  border-bottom: 1px solid rgba($primary, 0.2);
+  transition: all 0.4s ease;
 
   &-container {
     display: flex;
@@ -13,22 +16,104 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
+    padding: $spacing-md $spacing-lg;
   }
 
-  nav {
+  &-logo {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $primary;
+    text-decoration: none;
     display: flex;
-    gap: $spacing-lg;
+    align-items: center;
+    gap: $spacing-sm;
+    transition: $transition-fast;
 
-    a {
+    &:hover {
+      color: lighten($primary, 15%);
+      transform: translateY(-2px);
+    }
+  }
+
+  &-nav {
+    display: flex;
+    gap: $spacing-md;
+
+    &-link {
+      position: relative;
       color: $beige;
       text-decoration: none;
       font-family: $font-main;
-      font-weight: 600;
-      transition: color 0.3s;
+      font-weight: 500;
+      padding: $spacing-sm $spacing-md;
+      transition: $transition-fast;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: $primary;
+        transform: translateX(-50%);
+        transition: $transition-medium;
+      }
 
       &:hover {
         color: $primary;
+
+        &::after {
+          width: 100%;
+        }
       }
+
+      &.active {
+        color: $primary;
+        font-weight: 600;
+
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  &-mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: $beige;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    &-nav {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      background: rgba($midnight-black, 0.98);
+      flex-direction: column;
+      align-items: center;
+      padding: $spacing-lg 0;
+      clip-path: circle(0px at 90% -10%);
+      transition: clip-path 0.7s ease-out;
+
+      &.open {
+        clip-path: circle(1000px at 90% -10%);
+      }
+
+      &-link {
+        padding: $spacing-md 0;
+        font-size: 1.2rem;
+      }
+    }
+
+    &-mobile-toggle {
+      display: block;
     }
   }
 }

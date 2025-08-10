@@ -68,3 +68,8 @@ exports.generateResume = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Error generating PDF', 500));
   }
 });
+
+exports.previewTemplate = asyncHandler(async (req, res, next) => {
+  const template = await ResumeTemplate.findById(req.params.id);
+  res.sendFile(path.join(__dirname, '../public', template.templateFile));
+});

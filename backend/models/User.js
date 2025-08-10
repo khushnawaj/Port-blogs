@@ -46,6 +46,16 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+const seedAdmin = async () => {
+  if (!await User.findOne({ email: 'admin@example.com' })) {
+    await User.create({
+      email: 'admin@example.com',
+      password: 'securepassword123',
+      role: 'admin'
+    });
+  }
+};
+
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
@@ -55,6 +65,7 @@ UserSchema.pre('save', async function(next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
+
 
 // Sign JWT and return
 UserSchema.methods.getSignedJwtToken = function() {
