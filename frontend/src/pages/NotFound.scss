@@ -1,0 +1,58 @@
+@import '../styles/variables'; // Assuming your variables file is named _variables.scss
+
+.not-found {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: $font-main;
+  color: $text-color;
+  padding: $spacing-lg;
+  background: linear-gradient(-45deg, $mango-yellow, $beige, $dark-grey, $pure-black);
+  background-size: 300% 300%;
+  animation: gradientBG 8s ease infinite;
+
+  h1 {
+    font-size: 5rem;
+    font-family: $font-heading;
+    margin-bottom: $spacing-md;
+    position: relative;
+    color: $primary;
+
+    &::before {
+      content: "🚫"; // Icon before heading
+      position: absolute;
+      left: -8rem;
+      font-size: 5rem;
+      animation: pulse 2s infinite;
+    }
+  }
+
+  p {
+    font-size: 1.2rem;
+    color: $pure-white;
+    margin-bottom: $spacing-lg;
+    max-width: 500px;
+  }
+
+  .home-link {
+    display: inline-block;
+    padding: $spacing-sm $spacing-lg;
+    background-color: $primary;
+    color: $pure-black;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba($pure-black, 0.2);
+    transition: $transition-medium;
+    animation: pulse 3s infinite;
+
+    &:hover {
+      background-color: darken($primary, 10%);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba($pure-black, 0.3);
+    }
+  }
+}
