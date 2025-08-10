@@ -151,3 +151,103 @@ exports.clonePortfolio = asyncHandler(async (req, res, next) => {
 });
 // Similar controllers for Experience, Projects, and Skills would follow...
 // I've shown the pattern for Education, the others would be very similar
+// ================= EXPERIENCE CONTROLLERS ================= //
+
+// @desc    Get experience
+// @route   GET /api/v1/portfolio/experience
+// @route   GET /api/v1/portfolio/experience/:id
+// @access  Public/Private
+exports.getExperience = asyncHandler(async (req, res, next) => {
+  if (req.params.id) {
+    const experience = await Experience.findById(req.params.id);
+
+    if (!experience) {
+      return next(
+        new ErrorResponse(`Experience not found with id of ${req.params.id}`, 404)
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: experience
+    });
+  }
+
+  res.status(200).json(res.advancedResults);
+});
+
+// @desc    Add experience
+// @route   POST /api/v1/portfolio/experience
+// @access  Private
+exports.addExperience = asyncHandler(async (req, res, next) => {
+  req.body.userId = req.user.id;
+
+  const experience = await Experience.create(req.body);
+
+  res.status(201).json({
+    success: true,
+    data: experience
+  });
+});
+
+// @desc    Update experience
+// @route   PUT /api/v1/portfolio/experience/:id
+// @access  Private
+exports.updateExperience = asyncHandler(async (req, res, next) => {
+  let experience = await Experience.findById(req.params.id);
+
+  if (!experience) {
+    return next(
+      new ErrorResponse(`Experience not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Ensure user owns this experience
+  if (experience.userId.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update this experience`,
+        401
+      )
+    );
+  }
+
+  experience = await Experience.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
+
+  res.status(200).json({
+    success: true,
+    data: experience
+  });
+});
+
+// @desc    Delete experience
+// @route   DELETE /api/v1/portfolio/experience/:id
+// @access  Private
+exports.deleteExperience = asyncHandler(async (req, res, next) => {
+  const experience = await Experience.findById(req.params.id);
+
+  if (!experience) {
+    return next(
+      new ErrorResponse(`Experience not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  if (experience.userId.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to delete this experience`,
+        401
+      )
+    );
+  }
+
+  await experience.remove();
+
+  res.status(200).json({
+    success: true,
+    data: {}
+  });
+});

@@ -73,3 +73,12 @@ exports.previewTemplate = asyncHandler(async (req, res, next) => {
   const template = await ResumeTemplate.findById(req.params.id);
   res.sendFile(path.join(__dirname, '../public', template.templateFile));
 });
+exports.getUserTemplates = asyncHandler(async (req, res, next) => {
+  const templates = await ResumeTemplate.find({ userId: req.user.id });
+
+  res.status(200).json({
+    success: true,
+    count: templates.length,
+    data: templates
+  });
+});

@@ -16,7 +16,9 @@ const portfolioRoutes = require('./routes/portfolioRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const userRoutes = require('./routes/userRoutes');
 
-// Add to app.js
+const app = express(); // ✅ Move this up
+
+// Content Security Policy
 app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
@@ -26,8 +28,6 @@ app.use(helmet.contentSecurityPolicy({
     fontSrc: ["'self'", 'fonts.gstatic.com']
   }
 }));
-
-const app = express();
 
 // Body parser
 app.use(express.json());
@@ -51,7 +51,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Prevent http param pollution
+// Prevent HTTP param pollution
 app.use(hpp());
 
 // Enable CORS

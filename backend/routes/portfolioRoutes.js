@@ -5,6 +5,7 @@ const {
   addEducation,
   updateEducation,
   deleteEducation,
+   clonePortfolio,
   // Similar imports for experience, projects, skills
 } = require("../controllers/portfolioController");
 const { protect } = require("../middleware/auth");

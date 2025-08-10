@@ -169,3 +169,23 @@ exports.searchBlogPosts = asyncHandler(async (req, res, next) => {
   const posts = await BlogPost.find({ $text: { $search: q } });
   res.status(200).json({ success: true, data: posts });
 });
+
+exports.approveBlogPost = asyncHandler(async (req, res, next) => {
+  let blogPost = await BlogPost.findById(req.params.id);
+
+  if (!blogPost) {
+    return next(
+      new ErrorResponse(`Blog post not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  blogPost.status = 'published';
+  blogPost.publishedAt = Date.now();
+
+  await blogPost.save();
+
+  res.status(200).json({
+    success: true,
+    data: blogPost
+  });
+});
