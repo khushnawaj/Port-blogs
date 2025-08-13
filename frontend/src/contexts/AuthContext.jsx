@@ -1,4 +1,4 @@
-// contexts/AuthContext.jsx
+// src/contexts/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import { getMe } from '../services/auth';
 
@@ -11,22 +11,31 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const { data } = await getMe();
-        setCurrentUser(data);
+        // If no token, skip calling /auth/me to avoid 401 loops
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        // getMe() returns response.data (the plain user object)
+        const user = await getMe();
+        setCurrentUser(user);
       } catch (err) {
+        console.error('AuthContext loadUser error:', err);
         setCurrentUser(null);
-        console.error(err,'this is error from AuthContext')
       } finally {
         setLoading(false);
       }
     };
+
     loadUser();
   }, []);
 
   const value = {
     currentUser,
     setCurrentUser,
-    loading
+    loading,
   };
 
   return (

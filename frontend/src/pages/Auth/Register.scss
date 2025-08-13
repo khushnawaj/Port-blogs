@@ -1,0 +1,97 @@
+@import '../../styles/variables'; // Assuming the given variables are in _variables.scss
+
+.register-container {
+  background-color: $background-color;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-main;
+  padding: $spacing-lg;
+
+  .register-card {
+    background-color: $pure-white;
+    border-radius: $spacing-sm;
+    box-shadow: 0 4px 10px rgba($pure-black, 0.1);
+    width: 100%;
+    max-width: 450px;
+    padding: $spacing-lg;
+    animation: gradientBG 6s ease infinite;
+    background-size: 200% 200%;
+    transition: $transition-medium;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba($pure-black, 0.15);
+    }
+
+    h2 {
+      font-family: $font-heading;
+      color: $text-color;
+      margin-bottom: $spacing-md;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+
+      label {
+        font-weight: bold;
+        font-size: 0.95rem;
+        color: $secondary;
+      }
+
+      input {
+        padding: $spacing-sm $spacing-md;
+        border-radius: $spacing-xs;
+        border: 1px solid $dark-grey;
+        font-size: 1rem;
+        font-family: $font-main;
+        transition: $transition-fast;
+
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 3px rgba($primary, 0.2);
+        }
+      }
+
+      button {
+        padding: $spacing-sm $spacing-md;
+        background-color: $primary;
+        color: $pure-black;
+        border: none;
+        border-radius: $spacing-xs;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: $transition-fast;
+
+        &:hover {
+          background-color: darken($primary, 8%);
+          animation: pulse 0.6s ease;
+        }
+      }
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: $spacing-md;
+      font-size: 0.9rem;
+
+      a {
+        color: $primary;
+        font-weight: bold;
+        text-decoration: none;
+        transition: $transition-fast;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

@@ -5,9 +5,7 @@ const Experience = require('../models/Experience');
 const Project = require('../models/Project');
 const Skill = require('../models/Skill');
 
-// @desc    Get all portfolio items for a user
-// @route   GET /api/v1/portfolio/:userId
-// @access  Public
+// ================== PORTFOLIO ================== //
 exports.getPortfolio = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
 
@@ -20,118 +18,103 @@ exports.getPortfolio = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: {
-      education,
-      experience,
-      projects,
-      skills
-    }
+    data: { education, experience, projects, skills }
   });
 });
 
-// @desc    Get education
-// @route   GET /api/v1/portfolio/education
-// @route   GET /api/v1/portfolio/education/:id
-// @access  Public/Private
+// ================== EDUCATION ================== //
 exports.getEducation = asyncHandler(async (req, res, next) => {
   if (req.params.id) {
     const education = await Education.findById(req.params.id);
-
     if (!education) {
-      return next(
-        new ErrorResponse(`Education not found with id of ${req.params.id}`, 404)
-      );
+      return next(new ErrorResponse(`Education not found with id ${req.params.id}`, 404));
     }
-
-    return res.status(200).json({
-      success: true,
-      data: education
-    });
+    return res.status(200).json({ success: true, data: education });
   }
 
-  res.status(200).json(res.advancedResults);
+  const education = await Education.find();
+  res.status(200).json({ success: true, count: education.length, data: education });
 });
 
-// @desc    Add education
-// @route   POST /api/v1/portfolio/education
-// @access  Private
-exports.addEducation = asyncHandler(async (req, res, next) => {
-  // Add user to req.body
+exports.addEducation = asyncHandler(async (req, res) => {
   req.body.userId = req.user.id;
-
   const education = await Education.create(req.body);
-
-  res.status(201).json({
-    success: true,
-    data: education
-  });
+  res.status(201).json({ success: true, data: education });
 });
 
-// @desc    Update education
-// @route   PUT /api/v1/portfolio/education/:id
-// @access  Private
 exports.updateEducation = asyncHandler(async (req, res, next) => {
   let education = await Education.findById(req.params.id);
+  if (!education) return next(new ErrorResponse(`Education not found with id ${req.params.id}`, 404));
 
-  if (!education) {
-    return next(
-      new ErrorResponse(`Education not found with id of ${req.params.id}`, 404)
-    );
-  }
-
-  // Make sure user is education owner
   if (education.userId.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update this education`,
-        401
-      )
-    );
+    return next(new ErrorResponse(`Not authorized to update this record`, 401));
   }
 
-  education = await Education.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
-
-  res.status(200).json({
-    success: true,
-    data: education
-  });
+  education = await Education.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  res.status(200).json({ success: true, data: education });
 });
 
-// @desc    Delete education
-// @route   DELETE /api/v1/portfolio/education/:id
-// @access  Private
 exports.deleteEducation = asyncHandler(async (req, res, next) => {
   const education = await Education.findById(req.params.id);
+  if (!education) return next(new ErrorResponse(`Education not found with id ${req.params.id}`, 404));
 
-  if (!education) {
-    return next(
-      new ErrorResponse(`Education not found with id of ${req.params.id}`, 404)
-    );
-  }
-
-  // Make sure user is education owner
   if (education.userId.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to delete this education`,
-        401
-      )
-    );
+    return next(new ErrorResponse(`Not authorized to delete this record`, 401));
   }
 
-  await education.remove();
-
-  res.status(200).json({
-    success: true,
-    data: {}
-  });
+  await education.deleteOne();
+  res.status(200).json({ success: true, data: {} });
 });
+
+// ================== EXPERIENCE ================== //
+exports.getExperience = asyncHandler(async (req, res, next) => {
+  if (req.params.id) {
+    const experience = await Experience.findById(req.params.id);
+    if (!experience) {
+      return next(new ErrorResponse(`Experience not found with id ${req.params.id}`, 404));
+    }
+    return res.status(200).json({ success: true, data: experience });
+  }
+
+  const experiences = await Experience.find();
+  res.status(200).json({ success: true, count: experiences.length, data: experiences });
+});
+
+exports.addExperience = asyncHandler(async (req, res) => {
+  req.body.userId = req.user.id;
+  const experience = await Experience.create(req.body);
+  res.status(201).json({ success: true, data: experience });
+});
+
+exports.updateExperience = asyncHandler(async (req, res, next) => {
+  let experience = await Experience.findById(req.params.id);
+  if (!experience) return next(new ErrorResponse(`Experience not found with id ${req.params.id}`, 404));
+
+  if (experience.userId.toString() !== req.user.id) {
+    return next(new ErrorResponse(`Not authorized to update this record`, 401));
+  }
+
+  experience = await Experience.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  res.status(200).json({ success: true, data: experience });
+});
+
+exports.deleteExperience = asyncHandler(async (req, res, next) => {
+  const experience = await Experience.findById(req.params.id);
+  if (!experience) return next(new ErrorResponse(`Experience not found with id ${req.params.id}`, 404));
+
+  if (experience.userId.toString() !== req.user.id) {
+    return next(new ErrorResponse(`Not authorized to delete this record`, 401));
+  }
+
+  await experience.deleteOne();
+  res.status(200).json({ success: true, data: {} });
+});
+
+// ================== CLONE PORTFOLIO ================== //
 exports.clonePortfolio = asyncHandler(async (req, res, next) => {
   const sourceUserId = req.params.userId;
-  
+  const newUserId = req.user.id;
+
   const [edu, exp, proj, skl] = await Promise.all([
     Education.find({ userId: sourceUserId }),
     Experience.find({ userId: sourceUserId }),
@@ -139,115 +122,12 @@ exports.clonePortfolio = asyncHandler(async (req, res, next) => {
     Skill.find({ userId: sourceUserId })
   ]);
 
-  // Clone with new userId
-  const newUserId = req.user.id;
-  const cloneOps = [
-    Education.insertMany(edu.map(e => ({ ...e._doc, userId: newUserId, _id: undefined }))),
-    // Repeat for other models
-  ];
+  await Promise.all([
+    Education.insertMany(edu.map(e => ({ ...e.toObject(), _id: undefined, userId: newUserId }))),
+    Experience.insertMany(exp.map(e => ({ ...e.toObject(), _id: undefined, userId: newUserId }))),
+    Project.insertMany(proj.map(p => ({ ...p.toObject(), _id: undefined, userId: newUserId }))),
+    Skill.insertMany(skl.map(s => ({ ...s.toObject(), _id: undefined, userId: newUserId })))
+  ]);
 
-  await Promise.all(cloneOps);
-  res.status(201).json({ success: true });
-});
-// Similar controllers for Experience, Projects, and Skills would follow...
-// I've shown the pattern for Education, the others would be very similar
-// ================= EXPERIENCE CONTROLLERS ================= //
-
-// @desc    Get experience
-// @route   GET /api/v1/portfolio/experience
-// @route   GET /api/v1/portfolio/experience/:id
-// @access  Public/Private
-exports.getExperience = asyncHandler(async (req, res, next) => {
-  if (req.params.id) {
-    const experience = await Experience.findById(req.params.id);
-
-    if (!experience) {
-      return next(
-        new ErrorResponse(`Experience not found with id of ${req.params.id}`, 404)
-      );
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: experience
-    });
-  }
-
-  res.status(200).json(res.advancedResults);
-});
-
-// @desc    Add experience
-// @route   POST /api/v1/portfolio/experience
-// @access  Private
-exports.addExperience = asyncHandler(async (req, res, next) => {
-  req.body.userId = req.user.id;
-
-  const experience = await Experience.create(req.body);
-
-  res.status(201).json({
-    success: true,
-    data: experience
-  });
-});
-
-// @desc    Update experience
-// @route   PUT /api/v1/portfolio/experience/:id
-// @access  Private
-exports.updateExperience = asyncHandler(async (req, res, next) => {
-  let experience = await Experience.findById(req.params.id);
-
-  if (!experience) {
-    return next(
-      new ErrorResponse(`Experience not found with id of ${req.params.id}`, 404)
-    );
-  }
-
-  // Ensure user owns this experience
-  if (experience.userId.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to update this experience`,
-        401
-      )
-    );
-  }
-
-  experience = await Experience.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
-
-  res.status(200).json({
-    success: true,
-    data: experience
-  });
-});
-
-// @desc    Delete experience
-// @route   DELETE /api/v1/portfolio/experience/:id
-// @access  Private
-exports.deleteExperience = asyncHandler(async (req, res, next) => {
-  const experience = await Experience.findById(req.params.id);
-
-  if (!experience) {
-    return next(
-      new ErrorResponse(`Experience not found with id of ${req.params.id}`, 404)
-    );
-  }
-
-  if (experience.userId.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse(
-        `User ${req.user.id} is not authorized to delete this experience`,
-        401
-      )
-    );
-  }
-
-  await experience.remove();
-
-  res.status(200).json({
-    success: true,
-    data: {}
-  });
+  res.status(201).json({ success: true, message: 'Portfolio cloned successfully' });
 });

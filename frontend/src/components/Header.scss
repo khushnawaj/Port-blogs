@@ -1,7 +1,7 @@
 @import '../styles/variables';
 
 .header {
-  position: fixed;
+  position: relative;
   top: 0;
   width: 100%;
   background: rgba($midnight-black, 0.95);

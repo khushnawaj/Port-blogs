@@ -165,7 +165,7 @@ exports.uploadBlogImage = asyncHandler(async (req, res, next) => {
 });
 
 exports.searchBlogPosts = asyncHandler(async (req, res, next) => {
-  const { q } = req.query;
+  // const { q } = req.query;
   const posts = await BlogPost.find({ $text: { $search: q } });
   res.status(200).json({ success: true, data: posts });
 });

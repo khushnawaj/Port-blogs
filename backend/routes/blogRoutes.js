@@ -5,27 +5,31 @@ const {
   createBlogPost,
   updateBlogPost,
   deleteBlogPost,
-  uploadBlogImage
+  uploadBlogImage,
+  searchBlogPosts,
+  approveBlogPost
 } = require('../controllers/blogController');
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
-const { searchBlogPosts, approveBlogPost } = require('../controllers/blogController');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .get(getBlogPosts)
-  .post(protect, createBlogPost);
-
-router
-  .route('/:id')
-  .get(getBlogPost)
-  .put(protect, updateBlogPost)
-  .delete(protect, deleteBlogPost);
-
-router.route('/:id/image').put(protect, upload, uploadBlogImage);
+// Search should be before :id to avoid conflicts
 router.get('/search', searchBlogPosts);
+
+// Public routes
+router.get('/', getBlogPosts);
+router.get('/:id', getBlogPost);
+
+// Protected routes
+router.post('/', protect, createBlogPost);
+router.put('/:id', protect, updateBlogPost);
+router.delete('/:id', protect, deleteBlogPost);
+
+// Upload image
+router.put('/:id/image', protect, upload, uploadBlogImage);
+
+// Approve blog post (admin only)
 router.put('/:id/approve', protect, authorize('admin'), approveBlogPost);
 
 module.exports = router;

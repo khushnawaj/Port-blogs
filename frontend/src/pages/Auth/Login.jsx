@@ -21,17 +21,13 @@ const Login = () => {
 
     try {
       const { data } = await api.post('/auth/login', formData);
-      
+
       // Store token and user data
       localStorage.setItem('token', data.token);
       setCurrentUser(data.user);
 
       // Redirect based on role
-      if (data.user.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/');
-      }
+    navigate(data.user.role === 'admin' ? '/admin' : '/');
 
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Please try again.');
@@ -42,61 +38,53 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
+    <div className="login-container">
+      <div className="login-card">
         <h2>Login</h2>
         {error && <div className="alert error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="admin@example.com"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              required
-              autoFocus
-            />
-          </div>
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="admin@example.com"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+            autoFocus
+          />
 
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-              required
-            />
-          </div>
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            required
+          />
 
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="btn-primary"
-          >
+          <button type="submit" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <div className="auth-links">
+        <div className="login-links">
           <p>
-            Don't have an account?{' '}
-            <a href="/register">Register here</a>
+            Don't have an account? <a href="/register">Register here</a>
           </p>
           <p>
             <a href="/forgot-password">Forgot password?</a>
           </p>
         </div>
-      </div>
 
-      {/* Admin hint for demo purposes (remove in production) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="demo-hint">
-          <p>Admin demo: admin@example.com / admin123</p>
-        </div>
-      )}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="demo-hint">
+            <p>Admin demo: admin@example.com / admin123</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

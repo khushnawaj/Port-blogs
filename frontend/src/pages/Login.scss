@@ -1,0 +1,95 @@
+@import '../styles/variables';
+// Login.scss
+.login-page {
+  max-width: 4000px;
+  margin: $spacing-xl auto;
+  padding: $spacing-lg;
+  background: $pure-white;
+  border-radius: $spacing-xs;
+  box-shadow: 0 $spacing-xs $spacing-md rgba($pure-black, 0.1);
+  font-family: $font-main;
+  animation: fadeIn $transition-medium;
+
+  h2 {
+    font-family: $font-heading;
+    color: $text-color;
+    margin-bottom: $spacing-lg;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    input {
+      padding: $spacing-sm $spacing-md;
+      border: 1px solid darken($beige, 10%);
+      border-radius: $spacing-xs;
+      font-family: $font-main;
+      font-size: 1rem;
+      transition: $transition-fast;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 2px rgba($primary, 0.2);
+      }
+
+      &::placeholder {
+        color: lighten($text-color, 40%);
+      }
+    }
+
+    button {
+      background-color: $primary;
+      color: $text-color;
+      padding: $spacing-md;
+      border: none;
+      border-radius: $spacing-xs;
+      font-family: $font-heading;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: $transition-fast;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+
+      &:hover {
+        background-color: darken($primary, 10%);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        background-color: lighten($primary, 20%);
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY($spacing-md);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 480px) {
+  .login-page {
+    margin: $spacing-lg $spacing-md;
+    padding: $spacing-md;
+  }
+}

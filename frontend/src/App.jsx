@@ -36,6 +36,8 @@ function App() {
         {/* Blog Routes */}
         <Route path="blog" element={<BlogLayout />}>
           <Route index element={<BlogList />} />
+            <Route path="Create-Blog" element={<CreateBlogPost />} /> {/* ✅ Add this */}
+
 
           <Route path=":slug" element={<BlogPostSingle />} />
         </Route>

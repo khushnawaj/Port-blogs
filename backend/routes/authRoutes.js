@@ -1,25 +1,25 @@
+// routes/authRoutes.js
 const express = require('express');
+const router = express.Router();
+const { protect } = require('../middleware/auth');
 const {
   register,
   login,
   getMe,
-  forgotPassword
-} = require('../controllers/authController');
-const { protect } = require('../middleware/auth');
-const { 
+  forgotPassword,
   resetPassword,
   verifyEmail,
-  resendVerificationEmail 
+  resendVerificationEmail
 } = require('../controllers/authController');
-
-const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
+router.put('/reset-password/:token', resetPassword);
+router.get('/verify/:token', verifyEmail);
+router.post('/resend-verification', resendVerificationEmail);
+
+// Protected
 router.get('/me', protect, getMe);
-router.post('/forgotpassword', forgotPassword);
-router.put('/resetpassword/:resettoken', resetPassword);
-router.get('/verifyemail/:token', verifyEmail);
-router.post('/resendverification', protect, resendVerificationEmail);
 
 module.exports = router;

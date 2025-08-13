@@ -1,0 +1,133 @@
+@import '../../styles/variables.scss';
+
+.create-post-container {
+  background-color: $background-color;
+  min-height: 100vh;
+  padding: $spacing-lg;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.create-post-card {
+  background: $pure-white;
+  padding: $spacing-lg;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba($pure-black, 0.1);
+  max-width: 800px;
+  width: 100%;
+  animation: fadeIn 0.6s ease;
+}
+
+.form-title {
+  font-family: $font-heading;
+  margin-bottom: $spacing-md;
+  color: $secondary;
+}
+
+.form-error {
+  background: rgba(255, 0, 0, 0.1);
+  color: red;
+  padding: $spacing-sm;
+  border-radius: 0.5rem;
+  margin-bottom: $spacing-md;
+}
+
+.blog-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-weight: bold;
+    margin-bottom: $spacing-xs;
+    color: $text-color;
+  }
+
+  input, textarea, select {
+    padding: $spacing-sm;
+    border: 1px solid $secondary;
+    border-radius: 0.5rem;
+    font-family: $font-main;
+    font-size: 1rem;
+    transition: $transition-fast;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 5px rgba($primary, 0.5);
+      outline: none;
+    }
+  }
+}
+
+.tags-input {
+  display: flex;
+  gap: $spacing-sm;
+
+  input {
+    flex: 1;
+  }
+
+  .add-tag-btn {
+    background: $primary;
+    border: none;
+    padding: $spacing-sm $spacing-md;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      animation: pulse 0.5s ease;
+    }
+  }
+}
+
+.tags-list {
+  margin-top: $spacing-sm;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+
+  .tag {
+    background: $beige;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    .remove-tag {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: red;
+      font-weight: bold;
+    }
+  }
+}
+
+.submit-btn {
+  background: $primary;
+  color: $pure-black;
+  font-weight: bold;
+  border: none;
+  padding: $spacing-sm $spacing-md;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: $transition-fast;
+  font-size: 1rem;
+
+  &:hover {
+    background: darken($primary, 10%);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

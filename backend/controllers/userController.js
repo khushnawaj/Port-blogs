@@ -25,14 +25,44 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: user });
 });
 
-// Create user
+// Create user (Registration) - force role as 'user'
 exports.createUser = asyncHandler(async (req, res, next) => {
   const existingUser = await User.findOne({ email: req.body.email });
   if (existingUser) {
     return next(new ErrorResponse(`User with email ${req.body.email} already exists`, 400));
   }
+
+  // Force role to 'user' to prevent self-registering as admin
+  req.body.role = 'user';
+
   const user = await User.create(req.body);
-  res.status(201).json({ success: true, data: user });
+  sendTokenResponse(user, 201, res);
+});
+
+// Login user (new)
+exports.loginUser = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // Validate email & password
+  if (!email || !password) {
+    return next(new ErrorResponse('Please provide an email and password', 400));
+  }
+
+  // Check for user
+  const user = await User.findOne({ email }).select('+password');
+  if (!user) {
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
+
+  // Check if password matches
+  const isMatch = await user.matchPassword(password);
+  if (!isMatch) {
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
+
+  // If you want, add check for isVerified or role here
+
+  sendTokenResponse(user, 200, res);
 });
 
 // Update user (Admin)
@@ -125,7 +155,7 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
-// Send JWT
+// Send JWT token response (utility function)
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
   const options = {
@@ -133,5 +163,16 @@ const sendTokenResponse = (user, statusCode, res) => {
     httpOnly: true
   };
   if (process.env.NODE_ENV === 'production') options.secure = true;
-  res.status(statusCode).cookie('token', token, options).json({ success: true, token });
+
+  res.status(statusCode).cookie('token', token, options).json({
+    success: true,
+    token,
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      profilePicture: user.profilePicture
+    }
+  });
 };

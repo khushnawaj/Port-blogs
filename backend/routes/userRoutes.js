@@ -4,7 +4,8 @@ const path = require('path');
 const {
   getUsers,
   getUser,
-  createUser,
+  createUser, // Registration
+  loginUser,   // Login
   updateUser,
   deleteUser,
   uploadUserPhoto,
@@ -15,7 +16,7 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Configure Multer storage
+// Multer storage config (unchanged)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '../public/uploads'));
@@ -27,22 +28,21 @@ const storage = multer.diskStorage({
     );
   }
 });
-
 const upload = multer({ storage });
 
-// Routes
+// Public Routes
+router.post('/register', createUser);
+router.post('/login', loginUser);
+
+// Protected Routes
 router.use(protect);
+router.put('/profile', updateProfile);
+router.put('/changepassword', changePassword);
+router.put('/:id/photo', upload.single('photo'), uploadUserPhoto);
+
+// Admin Only Routes
 router.use(authorize('admin'));
-
-router.put('/profile', protect, updateProfile);
-router.put('/changepassword', protect, changePassword);
-router.put('/:id/photo', protect, upload.single('photo'), uploadUserPhoto);
-
-router
-  .route('/')
-  .get(getUsers)
-  .post(createUser);
-
+router.get('/', getUsers);
 router
   .route('/:id')
   .get(getUser)

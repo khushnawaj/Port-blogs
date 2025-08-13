@@ -1,11 +1,11 @@
+// src/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1',
-  withCredentials: true
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1', // remove /v1 unless backend has it
+  withCredentials: true,
 });
 
-// Request interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -14,16 +14,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error?.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      // optionally clear user in AuthContext
+      const path = window.location?.pathname || '';
+      const isOnAuthPage = path === '/login' || path === '/register';
+      const url = (error.config && (error.config.url || '')) || '';
+      const isSelfCheck = url.includes('/auth/me');
+
+      if (!isOnAuthPage && !isSelfCheck) {
+        try {
+          window.history.pushState({}, '', '/login');
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        } catch {
+          window.location.assign('/login');
+        }
+      }
     }
     return Promise.reject(error);
   }
 );
+
 
 export default api;

@@ -1,230 +1,72 @@
+// controllers/authController.js
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const ErrorResponse = require('../utils/errorResponse');
-const asyncHandler = require('../middleware/async');
-const sendEmail = require('../utils/sendEmail');
-const crypto = require('crypto');
+const { JWT_SECRET, JWT_EXPIRE } = require('../config/config');
 
-// @desc    Register user with email verification
-// @route   POST /api/v1/auth/register
-// @access  Public
-exports.register = asyncHandler(async (req, res, next) => {
-  const { username, email, password, role } = req.body;
+// helper to return safe user object
+const safeUser = (u) => ({
+  _id: u._id,
+  username: u.username,
+  email: u.email,
+  role: u.role,
+  isVerified: u.isVerified,
+  profilePicture: u.profilePicture,
+  createdAt: u.createdAt
+});
 
-  // Create user
-  const user = await User.create({
-    username,
-    email,
-    password,
-    role
-  });
+const signToken = (userId) => jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: JWT_EXPIRE || '30d' });
 
-  // Generate email verification token
-  const verifyToken = crypto.randomBytes(20).toString('hex');
-  user.verifyToken = crypto.createHash('sha256').update(verifyToken).digest('hex');
-  user.verifyTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-
-  await user.save({ validateBeforeSave: false });
-
-  const verifyUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/verifyemail/${verifyToken}`;
-  const message = `Please verify your email by clicking the link: \n\n ${verifyUrl}`;
-
+exports.register = async (req, res, next) => {
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Verify Your Email',
-      message
-    });
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) return res.status(400).json({ error: 'All fields are required' });
+
+    const existing = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existing) return res.status(409).json({ error: 'Email already registered' });
+
+    // Create user (model pre-save will hash password)
+    const user = await User.create({ username, email: email.toLowerCase().trim(), password, role: 'user' });
+
+    const token = signToken(user._id);
+    return res.status(201).json({ token, user: safeUser(user) });
   } catch (err) {
-    console.error(err);
-    user.verifyToken = undefined;
-    user.verifyTokenExpire = undefined;
-    await user.save({ validateBeforeSave: false });
-    return next(new ErrorResponse('Email could not be sent', 500));
+    console.error('Register error:', err);
+    next(err);
   }
-
-  sendTokenResponse(user, 200, res);
-});
-
-// @desc    Login user
-// @route   POST /api/v1/auth/login
-// @access  Public
-exports.login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return next(new ErrorResponse('Please provide an email and password', 400));
-  }
-
-  const user = await User.findOne({ email }).select('+password');
-
-  if (!user) {
-    return next(new ErrorResponse('Invalid credentials', 401));
-  }
-
-  const isMatch = await user.matchPassword(password);
-
-  if (!isMatch) {
-    return next(new ErrorResponse('Invalid credentials', 401));
-  }
-
-  sendTokenResponse(user, 200, res);
-});
-
-// @desc    Get current logged in user
-// @route   GET /api/v1/auth/me
-// @access  Private
-exports.getMe = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
-  res.status(200).json({
-    success: true,
-    data: user
-  });
-});
-
-// @desc    Forgot password
-// @route   POST /api/v1/auth/forgotpassword
-// @access  Public
-exports.forgotPassword = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
-
-  if (!user) {
-    return next(new ErrorResponse('There is no user with that email', 404));
-  }
-
-  const resetToken = user.getResetPasswordToken();
-  await user.save({ validateBeforeSave: false });
-
-  const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/resetpassword/${resetToken}`;
-  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
-
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Password Reset Token',
-      message
-    });
-
-    res.status(200).json({ success: true, data: 'Email sent' });
-  } catch (err) {
-    console.error(err);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
-    await user.save({ validateBeforeSave: false });
-    return next(new ErrorResponse('Email could not be sent', 500));
-  }
-});
-
-// @desc    Verify email
-// @route   GET /api/v1/auth/verifyemail/:verifyToken
-// @access  Public
-exports.verifyEmail = asyncHandler(async (req, res, next) => {
-  const verifyTokenHash = crypto.createHash('sha256').update(req.params.verifyToken).digest('hex');
-
-  const user = await User.findOne({
-    verifyToken: verifyTokenHash,
-    verifyTokenExpire: { $gt: Date.now() }
-  });
-
-  if (!user) {
-    return next(new ErrorResponse('Invalid or expired verification token', 400));
-  }
-
-  user.verifyToken = undefined;
-  user.verifyTokenExpire = undefined;
-  user.isVerified = true;
-
-  await user.save({ validateBeforeSave: false });
-
-  res.status(200).json({
-    success: true,
-    message: 'Email verified successfully'
-  });
-});
-
-// Utility function: Send JWT token in response
-const sendTokenResponse = (user, statusCode, res) => {
-  const token = user.getSignedJwtToken();
-
-  const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    options.secure = true;
-  }
-
-  res
-    .status(statusCode)
-    .cookie('token', token, options)
-    .json({
-      success: true,
-      token
-    });
 };
 
-// @desc    Reset password
-// @route   PUT /api/v1/auth/resetpassword/:resettoken
-// @access  Public
-exports.resetPassword = asyncHandler(async (req, res, next) => {
-  const resetPasswordToken = crypto
-    .createHash('sha256')
-    .update(req.params.resettoken)
-    .digest('hex');
-
-  const user = await User.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() }
-  });
-
-  if (!user) {
-    return next(new ErrorResponse('Invalid or expired token', 400));
-  }
-
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
-
-  sendTokenResponse(user, 200, res);
-});
-
-// @desc    Resend verification email
-// @route   POST /api/v1/auth/resendverification
-// @access  Private
-exports.resendVerificationEmail = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
-
-  if (!user) {
-    return next(new ErrorResponse('User not found', 404));
-  }
-  if (user.isVerified) {
-    return next(new ErrorResponse('Email already verified', 400));
-  }
-
-  const verifyToken = crypto.randomBytes(20).toString('hex');
-  user.verifyToken = crypto.createHash('sha256').update(verifyToken).digest('hex');
-  user.verifyTokenExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-  await user.save({ validateBeforeSave: false });
-
-  const verifyUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/verifyemail/${verifyToken}`;
-  const message = `Please verify your email by visiting: ${verifyUrl}`;
-
+exports.login = async (req, res, next) => {
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Verify Your Email',
-      message
-    });
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Please provide email and password' });
 
-    res.status(200).json({ success: true, data: 'Verification email resent' });
+    const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+    const match = await user.matchPassword(password);
+    if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+
+    const token = signToken(user._id);
+    return res.status(200).json({ token, user: safeUser(user) });
   } catch (err) {
-    console.error(err);
-    user.verifyToken = undefined;
-    user.verifyTokenExpire = undefined;
-    await user.save({ validateBeforeSave: false });
-    return next(new ErrorResponse('Email could not be sent', 500));
+    console.error('Login error:', err);
+    next(err);
   }
-});
+};
+
+exports.getMe = async (req, res, next) => {
+  try {
+    const uid = req.user && (req.user.id || req.user._id);
+    const user = await User.findById(uid);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    return res.json(safeUser(user));
+  } catch (err) {
+    next(err);
+  }
+};
+
+// placeholders
+exports.forgotPassword = async (req, res, next) => res.json({ message: 'Forgot password placeholder' });
+exports.resetPassword = async (req, res, next) => res.json({ message: 'Reset password placeholder' });
+exports.verifyEmail = async (req, res, next) => res.json({ message: 'Verify email placeholder' });
+exports.resendVerificationEmail = async (req, res, next) => res.json({ message: 'Resend verification placeholder' });
