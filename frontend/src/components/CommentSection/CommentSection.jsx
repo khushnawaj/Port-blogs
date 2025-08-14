@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import './CommentSection.scss'
 
 const CommentsSection = ({ postId, comments: initialComments }) => {
   const [comments, setComments] = useState(initialComments || []);

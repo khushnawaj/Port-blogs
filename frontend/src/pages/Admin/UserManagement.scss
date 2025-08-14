@@ -1,0 +1,138 @@
+@import '../../styles/variables'; // adjust path
+
+.user-management {
+  padding: $spacing-lg;
+  font-family: $font-main;
+  background-color: $background-color;
+  min-height: 100vh;
+  color: $text-color;
+
+  h2 {
+    font-family: $font-heading;
+    font-size: 1.8rem;
+    margin-bottom: $spacing-md;
+    color: $secondary;
+    border-bottom: 2px solid $primary;
+    padding-bottom: $spacing-xs;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: $pure-white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba($pure-black, 0.05);
+
+    thead {
+      background-color: $secondary;
+      color: $pure-white;
+
+      th {
+        padding: $spacing-sm $spacing-md;
+        text-align: left;
+        font-weight: 600;
+      }
+    }
+
+    tbody {
+      tr {
+        transition: $transition-fast;
+
+        &:nth-child(even) {
+          background-color: lighten($beige, 5%);
+        }
+
+        &:hover {
+          background-color: lighten($primary, 45%);
+        }
+
+        td {
+          padding: $spacing-sm $spacing-md;
+          border-bottom: 1px solid lighten($secondary, 50%);
+        }
+      }
+    }
+  }
+
+  button {
+    padding: $spacing-xs $spacing-md;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    // Default action styling
+    background-color: $primary;
+    color: $pure-black;
+
+    &:hover {
+      background-color: darken($primary, 5%);
+    }
+  }
+
+  // Special styles for active/inactive toggle
+  tbody tr td:last-child button {
+    &.deactivate {
+      background-color: #ff4d4d;
+      color: $pure-white;
+
+      &:hover {
+        background-color: darken(#ff4d4d, 10%);
+      }
+    }
+
+    &.activate {
+      background-color: #4caf50;
+      color: $pure-white;
+
+      &:hover {
+        background-color: darken(#4caf50, 10%);
+      }
+    }
+  }
+
+  // Responsive table
+  @media (max-width: 768px) {
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+      display: block;
+      width: 100%;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      margin-bottom: $spacing-md;
+      background-color: $pure-white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba($pure-black, 0.05);
+      padding: $spacing-md;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: $spacing-xs 0;
+      border: none;
+
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: $secondary;
+      }
+    }
+  }
+}

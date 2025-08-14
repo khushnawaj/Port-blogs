@@ -1,0 +1,118 @@
+@import '../../styles/variables';
+
+.blog-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  font-family: $font-main;
+
+  h2 {
+    font-family: $font-heading;
+    font-size: 1.8rem;
+    margin-bottom: $spacing-md;
+    color: $text-color;
+  }
+
+  .loading,
+  .error,
+  .empty {
+    text-align: center;
+    font-size: 1.1rem;
+    color: $secondary;
+    padding: $spacing-lg;
+    border-radius: 0.5rem;
+    background-color: lighten($secondary, 45%);
+  }
+
+  .post-card {
+    padding: $spacing-md;
+    background-color: $background-color;
+    border: 1px solid lighten($secondary, 20%);
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 6px rgba($pure-black, 0.05);
+    transition: $transition-fast;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba($pure-black, 0.08);
+    }
+
+    h3 {
+      font-size: 1.4rem;
+      margin-bottom: $spacing-sm;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      a {
+        text-decoration: none;
+        color: $text-color;
+        transition: $transition-fast;
+
+        &:hover {
+          color: $primary;
+        }
+      }
+
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.3rem;
+        text-transform: uppercase;
+        font-weight: bold;
+        color: $pure-white;
+
+        &.pending {
+          background-color: darken($primary, 10%);
+        }
+
+        &.draft {
+          background-color: $secondary;
+        }
+      }
+    }
+
+    .post-excerpt {
+      font-size: 1rem;
+      line-height: 1.4;
+      margin-bottom: $spacing-md;
+      color: darken($text-color, 15%);
+    }
+
+    .post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+      font-size: 0.9rem;
+      color: lighten($secondary, 20%);
+
+      .author {
+        font-weight: bold;
+        color: $text-color;
+      }
+
+      .date {
+        color: lighten($secondary, 20%);
+      }
+
+      .tags {
+        display: flex;
+        gap: $spacing-xs;
+
+        .tag {
+          text-decoration: none;
+          background-color: lighten($primary, 40%);
+          color: darken($primary, 20%);
+          padding: 0.2rem 0.4rem;
+          border-radius: 0.3rem;
+          font-size: 0.8rem;
+          transition: $transition-fast;
+
+          &:hover {
+            background-color: lighten($primary, 30%);
+          }
+        }
+      }
+    }
+  }
+}

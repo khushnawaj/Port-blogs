@@ -1,0 +1,94 @@
+@import '../../styles/variables';
+
+.admin-nav {
+  background-color: $midnight-black;
+  padding: $spacing-sm 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba($pure-black, 0.1);
+
+  &__container {
+    display: flex;
+    justify-content: center;
+    gap: $spacing-lg;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-md;
+  }
+
+  &__link {
+    color: $pure-white;
+    text-decoration: none;
+    font-family: $font-main;
+    font-weight: 500;
+    padding: $spacing-sm $spacing-md;
+    border-radius: 4px;
+    transition: $transition-fast;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    position: relative;
+
+    &:hover {
+      background-color: rgba($pure-white, 0.1);
+      transform: translateY(-2px);
+    }
+
+    &.active {
+      background-color: $primary;
+      color: $pure-black;
+      font-weight: 600;
+
+      &:hover {
+        background-color: darken($primary, 5%);
+      }
+    }
+
+    &--exit {
+      margin-left: auto;
+      background-color: rgba($pure-white, 0.1);
+      border: 1px solid $pure-white;
+
+      &:hover {
+        background-color: $pure-white;
+        color: $midnight-black;
+        animation: pulse 1.5s infinite;
+      }
+    }
+  }
+
+  &__badge {
+    background-color: $pure-white;
+    color: $midnight-black;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .admin-nav {
+    &__container {
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+    }
+
+    &__link {
+      padding: $spacing-xs $spacing-sm;
+      font-size: 0.9rem;
+
+      &--exit {
+        margin-left: 0;
+        order: 3;
+        flex: 1 0 100%;
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
+import './ProfilePage.scss';
 
 const ProfilePage = () => {
   const { currentUser, setCurrentUser } = useAuth();

@@ -1,68 +1,126 @@
 @import '../../styles/variables';
 
 .post-approval {
-  &-header {
-    margin-bottom: $spacing-xl;
+  padding: $spacing-lg;
+  font-family: $font-main;
+  background-color: $background-color;
+  color: $text-color;
+  min-height: 100vh;
 
-    h2 {
-      font-family: $font-heading;
-      color: $midnight-black;
-    }
+  h2 {
+    font-family: $font-heading;
+    font-size: 1.8rem;
+    margin-bottom: $spacing-md;
+    color: $secondary;
+    border-bottom: 2px solid $primary;
+    padding-bottom: $spacing-xs;
   }
 
-  &-list {
-    background: $pure-white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba($pure-black, 0.1);
+  p {
+    font-size: 1rem;
+    color: darken($secondary, 10%);
   }
 
-  &-item {
+  .pending-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: $spacing-md;
-    border-bottom: 1px solid rgba($dark-grey, 0.1);
+    flex-direction: column;
+    gap: $spacing-md;
 
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &-info {
-      h4 {
-        font-family: $font-heading;
-        color: $midnight-black;
-        margin-bottom: $spacing-xs;
-      }
-
-      p {
-        font-family: $font-main;
-        color: $dark-grey;
-      }
-    }
-
-    &-actions {
+    .pending-post {
+      background: $pure-white;
+      border-radius: 8px;
+      padding: $spacing-md;
+      box-shadow: 0 4px 10px rgba($pure-black, 0.05);
+      transition: $transition-fast;
       display: flex;
-      gap: $spacing-sm;
+      align-items: flex-start;
+      animation: fadeIn 0.4s ease-in-out;
 
-      button {
-        padding: $spacing-xs $spacing-sm;
-        border: none;
-        border-radius: 4px;
-        font-family: $font-main;
-        font-weight: 600;
-        cursor: pointer;
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba($pure-black, 0.08);
+      }
 
-        &.approve {
-          background: lighten($primary, 10%);
-          color: $midnight-black;
+      .post-content {
+        flex: 1;
+
+        h3 {
+          font-family: $font-heading;
+          font-size: 1.2rem;
+          margin-bottom: $spacing-xs;
         }
 
-        &.reject {
-          background: lighten($dark-grey, 50%);
-          color: $midnight-black;
+        .author {
+          font-size: 0.9rem;
+          color: darken($secondary, 20%);
+          margin-bottom: $spacing-sm;
+        }
+
+        .post-actions {
+          display: flex;
+          gap: $spacing-sm;
+          margin-top: $spacing-sm;
+
+          button,
+          a {
+            padding: $spacing-xs $spacing-md;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: $transition-fast;
+            text-decoration: none;
+            display: inline-block;
+          }
+
+          .approve-btn {
+            background-color: lighten($primary, 5%);
+            color: $pure-black;
+
+            &:hover {
+              background-color: $primary;
+              transform: scale(1.05);
+            }
+          }
+
+          .reject-btn {
+            background-color: #ff4d4d;
+            color: $pure-white;
+
+            &:hover {
+              background-color: darken(#ff4d4d, 10%);
+              transform: scale(1.05);
+            }
+          }
+
+          .preview-btn {
+            background-color: $secondary;
+            color: $pure-white;
+
+            &:hover {
+              background-color: lighten($secondary, 5%);
+              transform: scale(1.05);
+            }
+          }
         }
       }
     }
   }
+
+  .loading {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: $secondary;
+    animation: pulse 1s infinite ease-in-out;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }

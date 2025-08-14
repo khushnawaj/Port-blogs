@@ -1,4 +1,167 @@
-*{
+@import '../../styles/variables';
+
+.admin-dashboard {
+  padding: $spacing-xl $spacing-md;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: $text-color;
+
+  h1 {
+    font-family: $font-heading;
+    font-size: 2.5rem;
+    margin-bottom: $spacing-xl;
+    color: $secondary;
+    position: relative;
+    padding-bottom: $spacing-sm;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100px;
+      height: 4px;
+      background: $primary;
+    }
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-lg;
+  margin: $spacing-xl 0;
+}
+
+.stat-card {
+  background: $pure-white;
+  border-radius: 8px;
+  padding: $spacing-lg;
+  box-shadow: 0 4px 12px rgba($pure-black, 0.05);
+  transition: $transition-medium;
+  border: 1px solid rgba($secondary, 0.1);
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba($pure-black, 0.1);
+  }
+
+  h3 {
+    font-family: $font-main;
+    font-size: 1.1rem;
+    color: $dark-grey;
+    margin-bottom: $spacing-sm;
+    font-weight: 500;
+  }
+
+  p {
+    font-family: $font-heading;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $primary;
     margin: 0;
-    padding: 0;
+  }
+
+  &:nth-child(2) p {
+    color: lighten($primary, 15%);
+  }
+
+  &:nth-child(3) p {
+    color: darken($primary, 10%);
+  }
+}
+
+.admin-actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-xl;
+  flex-wrap: wrap;
+
+  .admin-button {
+    background: $primary;
+    color: $pure-black;
+    padding: $spacing-md $spacing-lg;
+    border-radius: 4px;
+    text-decoration: none;
+    font-family: $font-main;
+    font-weight: 600;
+    transition: $transition-fast;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+    border: 2px solid transparent;
+
+    &:hover {
+      background: darken($primary, 5%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba($pure-black, 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:nth-child(2) {
+      background: $pure-white;
+      color: $secondary;
+      border-color: $secondary;
+
+      &:hover {
+        background: $secondary;
+        color: $pure-white;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: $spacing-lg $spacing-sm;
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: $spacing-lg;
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+
+  
+
+  .admin-actions {
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    .admin-button {
+      width: 100%;
+    }
+  }
+  .stat-card {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: $primary;
+    border-radius: 50%;
+    opacity: 0;
+    transition: $transition-fast;
+  }
+  
+  &.updating::after {
+    opacity: 1;
+    animation: pulse 1.5s infinite;
+  }
+}
+
 }
