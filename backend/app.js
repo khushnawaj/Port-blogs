@@ -9,6 +9,7 @@ const blogRoutes = require('./routes/blogRoutes');
 const portfolioRoutes = require('./routes/portfolioRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require ('./routes/adminRoutes')
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.get('/api/v1/health', (req, res) => res.json({ status: 'ok' }));
 
 // mount routes
+app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/blog', blogRoutes);
 app.use('/api/v1/portfolio', portfolioRoutes);

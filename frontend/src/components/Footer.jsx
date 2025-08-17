@@ -38,7 +38,7 @@ export default function Footer() {
         <div className="footer-contact">
           <h3>Get In Touch</h3>
           <a href="mailto:hello@example.com" className="email">
-            <FiMail /> hello@example.com
+            <FiMail /> khushnawaj14@gmail.com
           </a>
           <p>Open for collaborations and interesting projects.</p>
         </div>

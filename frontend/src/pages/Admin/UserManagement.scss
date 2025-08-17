@@ -14,125 +14,103 @@
     color: $secondary;
     border-bottom: 2px solid $primary;
     padding-bottom: $spacing-xs;
+    text-align: center;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
+  .error-message {
+    color: #ff4d4f;
+    text-align: center;
+    margin-bottom: $spacing-md;
+  }
+
+  .loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: $secondary;
+  }
+
+  .user-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: $spacing-md;
+  }
+
+  .user-card {
     background-color: $pure-white;
-    border-radius: 8px;
-    overflow: hidden;
+    border-radius: 12px;
+    padding: $spacing-md;
     box-shadow: 0 4px 12px rgba($pure-black, 0.05);
-
-    thead {
-      background-color: $secondary;
-      color: $pure-white;
-
-      th {
-        padding: $spacing-sm $spacing-md;
-        text-align: left;
-        font-weight: 600;
-      }
-    }
-
-    tbody {
-      tr {
-        transition: $transition-fast;
-
-        &:nth-child(even) {
-          background-color: lighten($beige, 5%);
-        }
-
-        &:hover {
-          background-color: lighten($primary, 45%);
-        }
-
-        td {
-          padding: $spacing-sm $spacing-md;
-          border-bottom: 1px solid lighten($secondary, 50%);
-        }
-      }
-    }
-  }
-
-  button {
-    padding: $spacing-xs $spacing-md;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: $transition-fast;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
-      transform: scale(1.05);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba($pure-black, 0.1);
     }
 
-    // Default action styling
-    background-color: $primary;
-    color: $pure-black;
-
-    &:hover {
-      background-color: darken($primary, 5%);
-    }
-  }
-
-  // Special styles for active/inactive toggle
-  tbody tr td:last-child button {
-    &.deactivate {
-      background-color: #ff4d4d;
-      color: $pure-white;
-
-      &:hover {
-        background-color: darken(#ff4d4d, 10%);
-      }
+    .profile-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: $spacing-sm;
+      border: 2px solid $secondary;
     }
 
-    &.activate {
-      background-color: #4caf50;
-      color: $pure-white;
-
-      &:hover {
-        background-color: darken(#4caf50, 10%);
-      }
-    }
-  }
-
-  // Responsive table
-  @media (max-width: 768px) {
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-      display: block;
-      width: 100%;
+    h3 {
+      margin-bottom: $spacing-xs;
+      color: $text-color;
     }
 
-    thead {
-      display: none;
+    p {
+      margin: 0.25rem 0;
+      color: $secondary;
+      font-size: 0.9rem;
     }
 
-    tbody tr {
-      margin-bottom: $spacing-md;
-      background-color: $pure-white;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba($pure-black, 0.05);
-      padding: $spacing-md;
-    }
-
-    td {
-      display: flex;
-      justify-content: space-between;
-      padding: $spacing-xs 0;
+    button {
+      margin-top: $spacing-sm;
+      padding: $spacing-xs $spacing-md;
       border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: $pure-white;
+      transition: background 0.2s ease, transform 0.2s ease;
 
-      &::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: $secondary;
+      &:hover {
+        transform: scale(1.05);
       }
+
+      &.activate-btn {
+        background-color: #4caf50;
+        &:hover {
+          background-color: darken(#4caf50, 10%);
+        }
+      }
+
+      &.deactivate-btn {
+        background-color: #ff4d4d;
+        &:hover {
+          background-color: darken(#ff4d4d, 10%);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // Responsive adjustments (cards already flexible)
+  @media (max-width: 480px) {
+    .user-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .user-card {
+      padding: $spacing-sm;
     }
   }
 }

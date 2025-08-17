@@ -1,3 +1,0 @@
-// In a new adminRoutes.js
-router.get('/stats', protect, authorize('admin'), getDashboardStats);
-router.get('/pending-blogs', protect, authorize('admin'), getPendingBlogs);

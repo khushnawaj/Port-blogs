@@ -1,5 +1,5 @@
 import './About.scss';
-import profileImage from '../assets/profile-2.jpg'; // Add your image
+import profileImage from '../assets/profile-2.jpg'; 
 import { FiCode, FiDatabase, FiLayers } from 'react-icons/fi';
 
 export default function About() {

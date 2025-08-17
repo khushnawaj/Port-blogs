@@ -35,13 +35,37 @@ exports.register = async (req, res, next) => {
   }
 };
 
+// exports.login = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+//     if (!email || !password) return res.status(400).json({ error: 'Please provide email and password' });
+
+//     const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
+//     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+//     const match = await user.matchPassword(password);
+//     if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+
+//     const token = signToken(user._id);
+//     return res.status(200).json({ token, user: safeUser(user) });
+//   } catch (err) {
+//     console.error('Login error:', err);
+//     next(err);
+//   }
+// };
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ error: 'Please provide email and password' });
+    if (!email || !password)
+      return res.status(400).json({ error: 'Please provide email and password' });
 
     const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+    // Check if user is inactive
+    if (user.status === 'inactive') {
+      return res.status(403).json({ error: 'Account is deactivated. Contact admin.' });
+    }
 
     const match = await user.matchPassword(password);
     if (!match) return res.status(401).json({ error: 'Invalid credentials' });
@@ -53,6 +77,7 @@ exports.login = async (req, res, next) => {
     next(err);
   }
 };
+
 
 exports.getMe = async (req, res, next) => {
   try {

@@ -5,16 +5,18 @@ import './AdminDashboard.scss';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
-    users: 0,
-    posts: 0,
-    pendingApprovals: 0
+    totalUsers: 0,
+    publishedPosts: 0,
+    pendingPosts: 0
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const { data } = await api.get('/admin/stats');
-        setStats(data);
+        if (data.success) {
+          setStats(data.data); // backend se directly set karenge
+        }
       } catch (err) {
         console.error('Failed to fetch stats:', err);
       }
@@ -25,27 +27,27 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <h1>Admin Dashboard</h1>
-      
+
       <div className="stats-grid">
         <div className="stat-card">
           <h3>Total Users</h3>
-          <p>{stats.users}</p>
+          <p>{stats.totalUsers}</p>
         </div>
         <div className="stat-card">
           <h3>Published Posts</h3>
-          <p>{stats.posts}</p>
+          <p>{stats.publishedPosts}</p>
         </div>
         <div className="stat-card">
           <h3>Pending Approvals</h3>
-          <p>{stats.pendingApprovals}</p>
+          <p>{stats.pendingPosts}</p>
         </div>
       </div>
 
       <div className="admin-actions">
-        <Link to="/admin/posts" className="admin-button">
+        <Link to="/admin/manage-posts" className="admin-button">
           Manage Posts
         </Link>
-        <Link to="/admin/users" className="admin-button">
+        <Link to="/admin/manage-users" className="admin-button">
           Manage Users
         </Link>
       </div>

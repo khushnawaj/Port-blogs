@@ -7,7 +7,8 @@ const {
   deleteBlogPost,
   uploadBlogImage,
   searchBlogPosts,
-  approveBlogPost
+  approveBlogPost,
+  getUserBlogs 
 } = require('../controllers/blogController');
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
@@ -20,6 +21,8 @@ router.get('/search', searchBlogPosts);
 // Public routes
 router.get('/', getBlogPosts);
 router.get('/:id', getBlogPost);
+router.get('/user/me', protect, getUserBlogs);
+
 
 // Protected routes
 router.post('/', protect, createBlogPost);

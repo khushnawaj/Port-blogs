@@ -83,7 +83,7 @@ const BlogLayout = () => {
       </aside>
 
       {/* Footer */}
-      <footer className="blog-footer">
+      {/* <footer className="blog-footer">
         <div className="container">
           <p>© {new Date().getFullYear()} MyDevBlog. All rights reserved.</p>
           <div className="footer-links">
@@ -92,7 +92,7 @@ const BlogLayout = () => {
             <Link to="/privacy">Privacy Policy</Link>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };
