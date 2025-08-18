@@ -1,6 +1,7 @@
 // backend/controllers/blogController.js
 const BlogPost = require('../models/BlogPost');
 const ErrorResponse = require('../utils/errorResponse');
+const Comment = require('../models/Comment');
 const asyncHandler = require('../middleware/async');
 const path = require('path');
 

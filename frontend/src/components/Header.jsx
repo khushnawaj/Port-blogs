@@ -1,87 +1,85 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // assuming you have AuthContext
+import { useAuth } from '../contexts/AuthContext';
+import { FiHome, FiFolder, FiBookOpen, FiUser, FiMail } from 'react-icons/fi';
 import './Header.scss';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [expandedIcon, setExpandedIcon] = useState(null);
+  const [isHoveringUser, setIsHoveringUser] = useState(false);
   const location = useLocation();
-  const { currentUser, logout } = useAuth(); // currentUser = null if not logged in
+  const { currentUser, logout } = useAuth();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setMobileMenuOpen(false); // Close mobile menu on route change
-  }, [location]);
-
   const navLinks = [
-    { path: '/', name: 'Home' },
-    { path: '/projects', name: 'Projects' },
-    { path: '/blog', name: 'Blog' },
-    { path: '/about', name: 'About' },
-    { path: '/contact', name: 'Contact' }
+    { path: '/', name: 'Dashboard', icon: <FiHome /> },
+    { path: '/projects', name: 'Projects', icon: <FiFolder /> },
+    { path: '/blog', name: 'Blog', icon: <FiBookOpen /> },
+    { path: '/about', name: 'About', icon: <FiUser /> },
+    { path: '/contact', name: 'Contact', icon: <FiMail /> }
   ];
 
   return (
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-container">
-        {/* Logo */}
         <Link to="/" className="header-logo">
           <span>Portfolio</span>
         </Link>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className="header-mobile-toggle"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? '✕' : '☰'}
-        </button>
-
-        {/* Nav Links */}
-        <nav className={`header-nav ${mobileMenuOpen ? 'open' : ''}`}>
+        <nav className="header-nav">
           {navLinks.map((link) => (
-            <Link
+            <div
               key={link.path}
-              to={link.path}
-              className={`header-nav-link ${
+              className={`nav-icon-wrapper ${
                 location.pathname === link.path ? 'active' : ''
-              }`}
+              } ${expandedIcon === link.path ? 'expanded' : ''}`}
+              onMouseEnter={() => setExpandedIcon(link.path)}
+              onMouseLeave={() => setExpandedIcon(null)}
             >
-              {link.name}
-            </Link>
+              <Link to={link.path} className="nav-icon">
+                {link.icon}
+              </Link>
+              <span className="nav-label">{link.name}</span>
+            </div>
           ))}
+        </nav>
 
-          {/* Right Side: Auth */}
+        <div className="header-auth-user">
           {!currentUser ? (
             <div className="header-auth">
-              <Link to="/login" className="btn btn-primary">Login</Link>
-              <Link to="/register" className="btn btn-outline">Sign Up</Link>
+              <Link to="/login" className="btn btn-primary">
+                Login
+              </Link>
+              <Link to="/register" className="btn btn-outline">
+                Sign Up
+              </Link>
             </div>
           ) : (
-            <div className="header-user">
+            <div 
+              className="header-user"
+              onMouseEnter={() => setIsHoveringUser(true)}
+              onMouseLeave={() => setIsHoveringUser(false)}
+            >
               <img
-                src={currentUser.avatar || '/default-avatar.png'}
+                src={currentUser.avatar || '/defaultProfile.jpg'}
                 alt="User Avatar"
                 className="header-user-avatar"
               />
               <span className="header-username">{currentUser.username}</span>
-              <div className="header-user-dropdown">
+              <div className={`header-user-dropdown ${isHoveringUser ? 'visible' : ''}`}>
                 <Link to="/profile">Profile</Link>
                 <Link to="/settings">Settings</Link>
                 <button onClick={logout}>Logout</button>
               </div>
             </div>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );

@@ -12,16 +12,20 @@ const {
 } = require('../controllers/blogController');
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const commentRouter = require('./commentRoutes');
+
 
 const router = express.Router();
+
+router.use('/:postId/comments', commentRouter);
 
 // Search should be before :id to avoid conflicts
 router.get('/search', searchBlogPosts);
 
 // Public routes
 router.get('/', getBlogPosts);
-router.get('/:id', getBlogPost);
 router.get('/user/me', protect, getUserBlogs);
+router.get('/:id', getBlogPost);
 
 
 // Protected routes

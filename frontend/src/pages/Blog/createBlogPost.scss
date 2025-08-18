@@ -1,3 +1,4 @@
+@use "sass:color";
 @import '../../styles/variables.scss';
 
 .create-post-container {
@@ -49,7 +50,9 @@
     color: $text-color;
   }
 
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     padding: $spacing-sm;
     border: 1px solid $secondary;
     border-radius: 0.5rem;
@@ -79,10 +82,15 @@
     padding: $spacing-sm $spacing-md;
     border-radius: 0.5rem;
     cursor: pointer;
-    transition: $transition-fast;
+    transition: transform 0.2s ease, background 0.3s ease;
 
     &:hover {
-      animation: pulse 0.5s ease;
+      background: color.adjust($primary, $lightness: -10%);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
   }
 }
@@ -100,6 +108,7 @@
     display: flex;
     align-items: center;
     gap: $spacing-xs;
+    font-size: 0.9rem;
 
     .remove-tag {
       background: none;
@@ -107,7 +116,19 @@
       cursor: pointer;
       color: red;
       font-weight: bold;
+      font-size: 1rem;
     }
+  }
+}
+
+.thumbnail-preview {
+  margin-top: $spacing-sm;
+
+  img {
+    max-width: 200px;
+    border-radius: 0.5rem;
+    border: 1px solid $secondary;
+    display: block;
   }
 }
 
@@ -119,15 +140,37 @@
   padding: $spacing-sm $spacing-md;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: $transition-fast;
+  transition: background 0.3s ease, transform 0.2s ease;
   font-size: 1rem;
 
   &:hover {
-    background: darken($primary, 10%);
+    background: color.adjust($primary, $lightness: -10%);
+    transform: scale(1.03);
+  }
+
+  &:active {
+    transform: scale(0.97);
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .create-post-card {
+    padding: $spacing-md;
+  }
+
+  .thumbnail-preview img {
+    max-width: 100%;
+  }
 }

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import './home.scss';
 import Button from '../components/Button';
-import heroImage from '../assets/hero1.jpg'; // Add your image
+import heroImage from '../assets/hero1.jpg'; 
 
 export default function Home() {
   // Scroll animation trigger

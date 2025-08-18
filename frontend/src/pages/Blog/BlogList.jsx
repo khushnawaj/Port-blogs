@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { getPosts } from "../../services/blog";
 import "./BlogList.scss";
 
@@ -9,9 +9,14 @@ const BlogList = () => {
   const [error, setError] = useState(null);
   const [expanded, setExpanded] = useState({});
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const category = searchParams.get("category");
   const author = searchParams.get("author");
+
+  const handleOpenBlog = (id) => {
+    navigate(`/blog/${id}`);
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -28,7 +33,6 @@ const BlogList = () => {
         setPosts(postsArray);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load posts");
-        console.error("Post fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -56,7 +60,8 @@ const BlogList = () => {
       {(category || author) && (
         <h2>
           Posts
-          {category && ` in ${category.charAt(0).toUpperCase() + category.slice(1)}`}
+          {category &&
+            ` in ${category.charAt(0).toUpperCase() + category.slice(1)}`}
           {author && ` by ${author}`}
         </h2>
       )}
@@ -66,10 +71,14 @@ const BlogList = () => {
           <article key={post._id} className="post-card">
             <div className="post-header">
               <h3>
-                <Link to={`/blog/${post.slug}`}>{post.title}</Link>
+                <Link to={`/blog/${post._id}`}>{post.title}</Link>
               </h3>
-              {post.status === "pending" && <span className="badge pending">Pending</span>}
-              {post.status === "draft" && <span className="badge draft">Draft</span>}
+              {post.status === "pending" && (
+                <span className="badge pending">Pending</span>
+              )}
+              {post.status === "draft" && (
+                <span className="badge draft">Draft</span>
+              )}
             </div>
 
             <p className="post-excerpt">
@@ -77,16 +86,20 @@ const BlogList = () => {
               {post.content?.split(" ").length > 20 && (
                 <button
                   className="see-more"
-                  onClick={() => toggleExpand(post._id)}
+                  onClick={() => handleOpenBlog(post._id)}
                 >
-                  {expanded[post._id] ? "See less" : "See more"}
+                  See more
                 </button>
               )}
             </p>
 
             <div className="post-meta">
-              <span className="author">By {post.author?.username || "Unknown"}</span>
-              <span className="date">{new Date(post.createdAt).toLocaleDateString()}</span>
+              <span className="author">
+                By {post.author?.username || "Unknown"}
+              </span>
+              <span className="date">
+                {new Date(post.createdAt).toLocaleDateString()}
+              </span>
               <div className="tags">
                 {post.tags?.map((tag) => (
                   <Link

@@ -39,7 +39,7 @@ function App() {
           <Route index element={<BlogList />} />
           <Route path="Create-Blog" element={<CreateBlogPost />} />{" "}
           {/* ✅ Add this */}
-          <Route path=":slug" element={<BlogPostSingle />} />
+          <Route path=":id" element={<BlogPostSingle />} />
         </Route>
           <Route path="profile" element={<ProfilePage />} />
 

@@ -1,20 +1,30 @@
-@import '../../styles/variables'; // assuming your color/spacing vars are here
+@import '../../styles/variables';
 
 .comments-section {
-  margin-top: $spacing-lg;
-  padding: $spacing-md;
+  margin-top: $spacing-xl;
+  padding: $spacing-lg $spacing-md;
   background-color: $background-color;
-  border: 1px solid lighten($secondary, 20%);
-  border-radius: 0.5rem;
+  border: 1px solid lighten($secondary, 25%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba($pure-black, 0.05);
   font-family: $font-main;
+  transition: $transition-fast;
+
+  &:hover {
+    box-shadow: 0 6px 18px rgba($pure-black, 0.1);
+  }
 
   h3 {
     font-family: $font-heading;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin-bottom: $spacing-md;
-    color: $text-color;
+    color: $midnight-black;
+    border-bottom: 2px solid $primary;
+    display: inline-block;
+    padding-bottom: $spacing-xs;
   }
 
+  /* --- Comment Form --- */
   form {
     display: flex;
     flex-direction: column;
@@ -23,78 +33,86 @@
 
     textarea {
       resize: none;
-      padding: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
       border: 1px solid lighten($secondary, 20%);
-      border-radius: 0.4rem;
+      border-radius: 8px;
       font-size: 1rem;
       font-family: $font-main;
       transition: $transition-fast;
+      min-height: 100px;
 
       &:focus {
         border-color: $primary;
         outline: none;
-        box-shadow: 0 0 0.2rem rgba($primary, 0.5);
+        box-shadow: 0 0 6px rgba($primary, 0.4);
       }
     }
 
     button {
       align-self: flex-end;
       background-color: $primary;
-      color: $pure-black;
+      color: $midnight-black;
       border: none;
-      padding: $spacing-sm $spacing-md;
+      padding: $spacing-sm $spacing-lg;
       font-weight: bold;
-      border-radius: 0.3rem;
+      border-radius: 6px;
       cursor: pointer;
       transition: $transition-fast;
 
       &:hover {
-        background-color: darken($primary, 5%);
-        transform: scale(1.02);
+        background-color: darken($primary, 8%);
+        transform: translateY(-2px);
       }
 
       &:active {
-        transform: scale(0.98);
+        transform: translateY(0);
       }
     }
   }
 
-  p {
-    font-size: 0.95rem;
-    color: $secondary;
-  }
-
+  /* --- Comment List --- */
   .comments-list {
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
-    border-top: 1px solid lighten($secondary, 20%);
+    border-top: 1px solid lighten($secondary, 25%);
     padding-top: $spacing-md;
 
     .comment {
-      padding: $spacing-sm;
-      border-bottom: 1px solid lighten($secondary, 25%);
-      font-size: 0.95rem;
+      padding: $spacing-sm $spacing-md;
+      border-radius: 8px;
+      background: lighten($beige, 6%);
+      transition: $transition-fast;
 
-      &:last-child {
-        border-bottom: none;
+      &:hover {
+        background: lighten($primary, 38%);
       }
 
       .comment-author {
         font-weight: bold;
         color: $primary;
         margin-bottom: $spacing-xs;
+        font-size: 0.95rem;
       }
 
       .comment-content {
         margin-bottom: $spacing-xs;
-        line-height: 1.4;
+        line-height: 1.5;
+        color: $text-color;
+        font-size: 1rem;
       }
 
       .comment-date {
         font-size: 0.8rem;
-        color: lighten($secondary, 30%);
+        color: lighten($secondary, 35%);
+        font-style: italic;
       }
     }
+  }
+
+  /* Empty message */
+  p {
+    font-size: 0.95rem;
+    color: $secondary;
   }
 }

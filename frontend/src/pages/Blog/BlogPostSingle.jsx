@@ -1,10 +1,12 @@
-import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import api from '../../services/api';
-import CommentsSection from '../../components/CommentSection/CommentSection';
+import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import "./BlogPostSingle.scss";
+
+import api from "../../services/api";
+import CommentsSection from "../../components/CommentSection/CommentSection";
 
 const BlogPostSingle = () => {
-  const { slug } = useParams();
+  const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,38 +14,45 @@ const BlogPostSingle = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const { data } = await api.get(`/blog/${slug}`);
+        const { data } = await api.get(`/blog/${id}`);
         setPost(data.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load post');
+        setError(err.response?.data?.message || "Failed to load post");
       } finally {
         setLoading(false);
       }
     };
 
     fetchPost();
-  }, [slug]);
+  }, [id]);
 
-  if (loading) return <div>Loading post...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="loading">Loading post...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <article className="blog-post">
-      <h1>{post.title}</h1>
-      <div className="post-meta">
-        <span>By {post.author?.username}</span>
-        <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
-      </div>
-      
-      <div className="post-content">
-        {post.content}
-      </div>
+      <header className="blog-post__header">
+        <h1>{post.title}</h1>
+        <div className="blog-post__meta">
+          <span>✍️ {post.author?.username || "Unknown"}</span>
+          <span>📅 {new Date(post.publishedAt).toLocaleDateString()}</span>
+        </div>
+      </header>
 
-      <div className="post-tags">
-        {post.tags?.map(tag => (
-          <span key={tag}>#{tag}</span>
-        ))}
-      </div>
+      <section
+        className="blog-post__content"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
+
+      {post.tags?.length > 0 && (
+        <footer className="blog-post__tags">
+          {post.tags.map((tag) => (
+            <Link key={tag} to={`/blog?category=${tag}`} className="tag">
+              #{tag}
+            </Link>
+          ))}
+        </footer>
+      )}
 
       <CommentsSection postId={post._id} comments={post.comments} />
     </article>

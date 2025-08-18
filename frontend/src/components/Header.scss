@@ -1,14 +1,19 @@
 @import '../styles/variables';
 
 .header {
-  position: relative;
+  position: fixed;
   top: 0;
   width: 100%;
   background: rgba($midnight-black, 0.95);
   backdrop-filter: blur(10px);
   z-index: 1000;
   border-bottom: 1px solid rgba($primary, 0.2);
-  transition: all 0.4s ease;
+  transition: all 0.3s ease-out;
+
+  &.scrolled {
+    background: rgba(darken($midnight-black, 3%), 0.98);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
 
   &-container {
     display: flex;
@@ -16,7 +21,8 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-    padding: $spacing-md $spacing-lg;
+    padding: 1rem 2rem;
+    height: 70px;
   }
 
   &-logo {
@@ -25,133 +31,103 @@
     font-weight: 700;
     color: $primary;
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    transition: $transition-fast;
+    transition: transform 0.2s ease, color 0.2s ease;
 
     &:hover {
-      color: lighten($primary, 15%);
+      color: lighten($primary, 10%);
       transform: translateY(-2px);
     }
   }
 
   &-nav {
     display: flex;
-    gap: $spacing-md;
+    gap: 1.5rem;
 
-    &-link {
+    .nav-icon-wrapper {
+      display: flex;
+      align-items: center;
       position: relative;
-      color: $beige;
-      text-decoration: none;
-      font-family: $font-main;
-      font-weight: 500;
-      padding: $spacing-sm $spacing-md;
-      transition: $transition-fast;
-
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 0;
-        height: 2px;
-        background: $primary;
-        transform: translateX(-50%);
-        transition: $transition-medium;
-      }
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
       &:hover {
-        color: $primary;
+        background: rgba($primary, 0.1);
+      }
 
-        &::after {
-          width: 100%;
+      .nav-icon {
+        font-size: 1.4rem;
+        color: $beige;
+        transition: color 0.3s ease;
+      }
+
+      .nav-label {
+        opacity: 0;
+        max-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        color: $beige;
+        font-family: $font-main;
+        font-weight: 500;
+        margin-left: 0;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      &.expanded {
+        .nav-label {
+          opacity: 1;
+          max-width: 200px;
+          margin-left: 0.75rem;
         }
       }
 
       &.active {
-        color: $primary;
-        font-weight: 600;
-
-        &::after {
-          width: 100%;
+        .nav-icon {
+          color: $primary;
         }
       }
     }
   }
 
-  &-mobile-toggle {
-    display: none;
-    background: none;
-    border: none;
-    color: $beige;
-    font-size: 1.5rem;
-    cursor: pointer;
+  &-auth-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
-
-  @media (max-width: 768px) {
-    &-nav {
-      position: fixed;
-      top: 70px;
-      left: 0;
-      width: 100%;
-      background: rgba($midnight-black, 0.98);
-      flex-direction: column;
-      align-items: center;
-      padding: $spacing-lg 0;
-      clip-path: circle(0px at 90% -10%);
-      transition: clip-path 0.7s ease-out;
-
-      &.open {
-        clip-path: circle(1000px at 90% -10%);
-      }
-
-      &-link {
-        padding: $spacing-md 0;
-        font-size: 1.2rem;
-      }
-    }
-
-    &-mobile-toggle {
-      display: block;
-    }
-  }
-}
-.header {
-  // ...your existing styles
 
   &-auth {
     display: flex;
-    align-items: center;
-    gap: $spacing-sm;
+    gap: 0.75rem;
 
     .btn {
       font-family: $font-main;
-      padding: 0.4rem 0.8rem;
+      padding: 0.5rem 1rem;
       border-radius: 6px;
-      transition: $transition-fast;
-      text-decoration: none;
+      font-size: 0.9rem;
       font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
       cursor: pointer;
 
       &-primary {
         background: $primary;
         color: $midnight-black;
-        border: none;
+        border: 2px solid $primary;
 
         &:hover {
-          background: lighten($primary, 10%);
+          background: lighten($primary, 8%);
+          border-color: lighten($primary, 8%);
         }
       }
 
       &-outline {
         background: transparent;
-        border: 1px solid $primary;
+        border: 2px solid $primary;
         color: $primary;
 
         &:hover {
-          background: $primary;
-          color: $midnight-black;
+          background: rgba($primary, 0.1);
         }
       }
     }
@@ -161,38 +137,56 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
-    cursor: pointer;
+    gap: 0.75rem;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba($primary, 0.1);
+    }
 
     &-avatar {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid $primary;
+      transition: border-color 0.2s ease;
     }
 
     .header-username {
       color: $beige;
       font-weight: 500;
+      font-size: 0.95rem;
     }
 
     &-dropdown {
-      display: none;
       position: absolute;
-      top: 120%;
+      top: calc(100% + 0.5rem);
       right: 0;
-      background: rgba($midnight-black, 0.95);
-      border: 1px solid rgba($primary, 0.2);
+      background: rgba($midnight-black, 0.98);
+      border: 1px solid rgba($primary, 0.3);
       border-radius: 6px;
-      padding: $spacing-sm 0;
+      padding: 0.5rem 0;
       min-width: 160px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      z-index: 100;
+
+      &.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
 
       a, button {
         display: block;
         width: 100%;
-        padding: $spacing-sm $spacing-md;
+        padding: 0.5rem 1rem;
         text-align: left;
         background: none;
         border: none;
@@ -200,17 +194,18 @@
         font-family: $font-main;
         font-size: 0.9rem;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: all 0.2s ease;
 
         &:hover {
           background: rgba($primary, 0.15);
           color: $primary;
         }
       }
-    }
 
-    &:hover .header-user-dropdown {
-      display: block;
+      button {
+        width: 100%;
+        text-align: left;
+      }
     }
   }
 }
