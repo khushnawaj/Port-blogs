@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./BlogPostSingle.scss";
 
@@ -7,6 +7,9 @@ import CommentsSection from "../../components/CommentSection/CommentSection";
 
 const BlogPostSingle = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const isPreview = location.state?.preview || false;
+
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +17,11 @@ const BlogPostSingle = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const { data } = await api.get(`/blog/${id}`);
+        const endpoint = isPreview
+          ? `/admin/posts/${id}` // 🔒 secure preview (needs token)
+          : `/blog/${id}`;       // 🌍 public view
+
+        const { data } = await api.get(endpoint);
         setPost(data.data);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load post");
@@ -24,7 +31,7 @@ const BlogPostSingle = () => {
     };
 
     fetchPost();
-  }, [id]);
+  }, [id, isPreview]);
 
   if (loading) return <div className="loading">Loading post...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -35,7 +42,10 @@ const BlogPostSingle = () => {
         <h1>{post.title}</h1>
         <div className="blog-post__meta">
           <span>✍️ {post.author?.username || "Unknown"}</span>
-          <span>📅 {new Date(post.publishedAt).toLocaleDateString()}</span>
+          <span>
+            📅 {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}
+          </span>
+          {isPreview && <span className="badge preview">Preview Mode</span>}
         </div>
       </header>
 
@@ -54,7 +64,9 @@ const BlogPostSingle = () => {
         </footer>
       )}
 
-      <CommentsSection postId={post._id} comments={post.comments} />
+      {!isPreview && (
+        <CommentsSection postId={post._id} comments={post.comments} />
+      )}
     </article>
   );
 };

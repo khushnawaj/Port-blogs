@@ -72,7 +72,7 @@ const PostApproval = () => {
                     Reject
                   </button>
                   <a
-                    href={`/blog/${post.slug}?preview=true`}
+                    href={`/blog/${post.id}?preview=true`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="preview-btn"
