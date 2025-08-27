@@ -38,6 +38,9 @@ const ProfilePage = () => {
         linkedin: currentUser.linkedin || '',
         website: currentUser.website || ''
       });
+       if (currentUser.profileImage) {
+      setAvatarPreview(currentUser.profileImage);
+    }
       
       // Set avatar preview if exists
       
@@ -47,7 +50,7 @@ const ProfilePage = () => {
 
       // Mock stats
       setStats({
-        solved: 127,
+        solved: 123,
         submissions: 423,
         acceptance: 82.4,
         posts: 9
@@ -70,7 +73,7 @@ const ProfilePage = () => {
   const handleUpdate = async (field) => {
     try {
       const { data } = await api.put('/users/profile', { [field]: formData[field] });
-      setCurrentUser(data.data);
+      setCurrentUser(data.user);
       setEditingField(null);
     } catch (err) {
       console.error('Failed to update profile:', err);
@@ -98,18 +101,17 @@ const ProfilePage = () => {
       setAvatarPreview(reader.result);
     };
     reader.readAsDataURL(file);
-
     // Upload to server
     const formData = new FormData();
     formData.append('photo', file);
 
     try {
-      const { data } = await api.put(`/users/${currentUser._id}/photo`, formData, {
+      const { data } = await api.put(`/users/me/photo`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      setCurrentUser(data.data);
+      setCurrentUser(data.user);
     } catch (err) {
       console.error('Failed to upload avatar:', err);
       setAvatarPreview('');
