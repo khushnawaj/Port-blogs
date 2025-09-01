@@ -10,6 +10,8 @@ const portfolioRoutes = require('./routes/portfolioRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require ('./routes/adminRoutes')
+const projectRoutes = require("./routes/projectRoutes");
+
 
 const app = express();
 
@@ -30,6 +32,9 @@ app.use('/api/v1/blog', blogRoutes);
 app.use('/api/v1/portfolio', portfolioRoutes);
 app.use('/api/v1/resume', resumeRoutes);
 app.use('/api/v1/users', userRoutes);
+
+//project routes
+app.use("/api/projects", projectRoutes);
 
 // central error handler (existing middleware)
 app.use((err, req, res, next) => errorHandler(err, req, res, next));

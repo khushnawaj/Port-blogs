@@ -66,6 +66,7 @@ async function seedAdmin() {
         isVerified: true,
       });
       console.log("Seeded admin user:", admin.email);
+      
     }
   } catch (err) {
     console.error("seedAdmin error:", err.message);

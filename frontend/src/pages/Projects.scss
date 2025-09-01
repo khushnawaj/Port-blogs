@@ -1,5 +1,4 @@
-@import '../styles/variables';
-
+@import "../styles/variables"; // Import variables first
 
 .projects {
   padding: $spacing-xl 0;
@@ -53,7 +52,7 @@
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 5px 15px rgba($midnight-black, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: $transition-fast;
     display: flex;
     flex-direction: column;
 
@@ -72,7 +71,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        transition: $transition-medium;
       }
 
       &:hover img {
@@ -127,7 +126,7 @@
         padding: $spacing-sm;
         border-radius: 4px;
         font-weight: 600;
-        transition: all 0.3s;
+        transition: $transition-fast;
 
         &.demo {
           background: $primary;
