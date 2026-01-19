@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import './CreateBlogPost.scss';
 
@@ -37,9 +38,10 @@ const CreateBlogPost = () => {
     e.preventDefault();
     try {
       await api.post('/blog', formData);
+      toast.success(currentUser?.role === 'admin' ? "Post published!" : "Submitted for review!");
       navigate(currentUser?.role === 'admin' ? '/admin/posts' : '/blog');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create post');
+      toast.error(err.response?.data?.message || 'Failed to create post');
     }
   };
 
@@ -47,7 +49,6 @@ const CreateBlogPost = () => {
     <div className="create-post-container">
       <div className="create-post-card">
         <h2 className="form-title">✍️ Create New Blog Post</h2>
-        {error && <div className="form-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="blog-form">
           <div className="form-group">
@@ -55,7 +56,7 @@ const CreateBlogPost = () => {
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Enter your post title"
               required
             />
@@ -65,7 +66,7 @@ const CreateBlogPost = () => {
             <label>Content</label>
             <textarea
               value={formData.content}
-              onChange={(e) => setFormData({...formData, content: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               rows={10}
               placeholder="Write your blog content here..."
               required
@@ -82,21 +83,21 @@ const CreateBlogPost = () => {
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                 placeholder="Add tag and press Enter"
               />
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleAddTag}
                 className="add-tag-btn"
               >
                 Add
               </button>
             </div>
-            
+
             <div className="tags-list">
               {formData.tags.map(tag => (
                 <span key={tag} className="tag">
                   {tag}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => handleRemoveTag(tag)}
                     className="remove-tag"
                   >
@@ -112,7 +113,7 @@ const CreateBlogPost = () => {
               <label>Status</label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
                 <option value="draft">Draft</option>
                 <option value="published">Publish Immediately</option>

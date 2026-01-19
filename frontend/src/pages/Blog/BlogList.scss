@@ -3,11 +3,82 @@
 .blog-list {
   font-family: $font-main;
 
-  h2 {
-    font-family: $font-heading;
-    font-size: 1.8rem;
+  .blog-header-dynamic {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: $spacing-md;
-    color: $text-color;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+
+    h2 {
+      margin-bottom: 0;
+      color: $text-color;
+      font-family: $font-heading;
+      font-size: 1.8rem;
+    }
+
+    .blog-controls {
+      display: flex;
+      gap: $spacing-sm;
+
+      .btn-toggle {
+        padding: 0.5rem 1rem;
+        background: transparent;
+        border: 1px solid $secondary;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: $transition-fast;
+        color: $text-color;
+
+        &:hover {
+          background: $secondary;
+          color: white;
+        }
+      }
+
+      .btn-create,
+      .btn-start {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        background: $primary;
+        color: $pure-black; // Text on primary
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: $transition-fast;
+
+        &:hover {
+          background: darken($primary, 10%);
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+
+  .empty {
+    text-align: center;
+    padding: 3rem;
+    color: $secondary;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: lighten($secondary, 60%);
+    border-radius: 8px;
+    border: 1px dashed $secondary;
+
+    .btn-start {
+      background: $primary;
+      color: $pure-black;
+      padding: 0.6rem 1.2rem;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
   }
 
   .card-grid {
@@ -62,6 +133,7 @@
         &.pending {
           background-color: darken($primary, 10%);
         }
+
         &.draft {
           background-color: $secondary;
         }

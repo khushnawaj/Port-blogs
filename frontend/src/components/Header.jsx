@@ -18,7 +18,7 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { path: '/', name: 'Dashboard', icon: <FiHome /> },
+    { path: '/', name: 'Home', icon: <FiHome /> },
     { path: '/projects', name: 'Projects', icon: <FiFolder /> },
     { path: '/blog', name: 'Blog', icon: <FiBookOpen /> },
     { path: '/about', name: 'About', icon: <FiUser /> },
@@ -36,9 +36,8 @@ export default function Header() {
           {navLinks.map((link) => (
             <div
               key={link.path}
-              className={`nav-icon-wrapper ${
-                location.pathname === link.path ? 'active' : ''
-              } ${expandedIcon === link.path ? 'expanded' : ''}`}
+              className={`nav-icon-wrapper ${location.pathname === link.path ? 'active' : ''
+                } ${expandedIcon === link.path ? 'expanded' : ''}`}
               onMouseEnter={() => setExpandedIcon(link.path)}
               onMouseLeave={() => setExpandedIcon(null)}
             >
@@ -61,13 +60,13 @@ export default function Header() {
               </Link>
             </div>
           ) : (
-            <div 
+            <div
               className="header-user"
               onMouseEnter={() => setIsHoveringUser(true)}
               onMouseLeave={() => setIsHoveringUser(false)}
             >
               <img
-                src={currentUser.avatar || '/defaultProfile.jpg'}
+                src={currentUser.profileImage || currentUser.avatar || '/defaultProfile.jpg'}
                 alt="User Avatar"
                 className="header-user-avatar"
               />

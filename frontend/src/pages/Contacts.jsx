@@ -1,8 +1,27 @@
-import { useState } from 'react';
-import { FiMail, FiMapPin, FiPhone } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
+import { FiMail, FiMapPin, FiPhone, FiGithub, FiTwitter, FiGlobe } from 'react-icons/fi';
 import './Contacts.scss';
+import { useAuth } from '../contexts/AuthContext';
+import { getMyPortfolio } from '../services/portfolioServices';
 
 export default function Contact() {
+  const { currentUser } = useAuth();
+  const [portfolio, setPortfolio] = useState(null);
+
+  useEffect(() => {
+    const loadPortfolio = async () => {
+      if (currentUser) {
+        try {
+          const res = await getMyPortfolio();
+          if (res.data) setPortfolio(res.data);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+    loadPortfolio();
+  }, [currentUser]);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,30 +42,69 @@ export default function Contact() {
     setFormData({ name: '', email: '', message: '' });
   };
 
+  const isPersonalized = currentUser && portfolio;
+  const contactInfo = isPersonalized ? portfolio.contact : {};
+
   return (
     <div className="contact">
       <div className="contact-container">
         {/* Contact Information */}
         <div className="contact-info">
-          <h1>Get In Touch</h1>
+          <h1>{isPersonalized ? `Contact ${portfolio.home.fullName}` : "Get In Touch"}</h1>
           <p>
-            Have a project in mind or want to discuss potential opportunities? 
-            Feel free to reach out through the form or directly via my contact details.
+            {isPersonalized
+              ? "Feel free to reach out through the form or directly via my contact details below."
+              : "Have a project in mind or want to discuss potential opportunities? Feel free to reach out."}
           </p>
 
           <div className="contact-info-details">
             <div>
               <FiMail />
-              <a href="mailto:hello@example.com">hello@example.com</a>
+              <a href={`mailto:${contactInfo.email || "hello@example.com"}`}>
+                {contactInfo.email || "hello@example.com"}
+              </a>
             </div>
-            <div>
-              <FiPhone />
-              <a href="tel:+1234567890">+1 (234) 567-890</a>
-            </div>
+            {contactInfo.phone && (
+              <div>
+                <FiPhone />
+                <a href={`tel:${contactInfo.phone}`}>
+                  {contactInfo.phone}
+                </a>
+              </div>
+            )}
+            {!isPersonalized && (
+              <div>
+                <FiPhone />
+                <a href="tel:+1234567890">+1 (234) 567-890</a>
+              </div>
+            )}
+
             <div>
               <FiMapPin />
-              <span>San Francisco, CA</span>
+              <span>{isPersonalized ? "Remote / Available Worldwide" : "San Francisco, CA"}</span>
             </div>
+
+            {/* Social Links if personalized */}
+            {isPersonalized && (
+              <div className="social-links" style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+                {contactInfo.github && (
+                  <a href={contactInfo.github} target="_blank" rel="noreferrer" title="GitHub">
+                    <FiGithub size={24} />
+                  </a>
+                )}
+                {contactInfo.twitter && (
+                  <a href={contactInfo.twitter} target="_blank" rel="noreferrer" title="Twitter">
+                    <FiTwitter size={24} />
+                  </a>
+                )}
+                {contactInfo.website && (
+                  <a href={contactInfo.website} target="_blank" rel="noreferrer" title="Website">
+                    <FiGlobe size={24} />
+                  </a>
+                )}
+              </div>
+            )}
+
           </div>
         </div>
 
@@ -55,7 +113,7 @@ export default function Contact() {
           <div className="contact-success">
             <h2>Thank You!</h2>
             <p>Your message has been sent successfully. I'll get back to you soon.</p>
-            <button 
+            <button
               onClick={() => setIsSubmitted(false)}
               className="btn btn-primary"
             >

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import './Login.scss';
@@ -27,10 +28,22 @@ const Login = () => {
       setCurrentUser(data.user);
 
       // Redirect based on role
-    navigate(data.user.role === 'admin' ? '/admin' : '/');
-
+      if (data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        // Check if user has portfolio
+        try {
+          await api.get("/portfolio/me");
+          // If successful (200 OK), user has portfolio -> Go Home
+          navigate('/');
+        } catch (portfolioErr) {
+          // If 404 or error, assume no portfolio -> Go to Builder
+          navigate('/portfolio-builder');
+        }
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      const msg = err.response?.data?.error || 'Login failed. Please try again.';
+      toast.error(msg);
       console.error('Login error:', err);
     } finally {
       setLoading(false);
@@ -41,7 +54,6 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <h2>Login</h2>
-        {error && <div className="alert error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">Email</label>

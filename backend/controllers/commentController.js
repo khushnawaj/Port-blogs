@@ -18,7 +18,9 @@ exports.addComment = asyncHandler(async (req, res, next) => {
   const comment = await Comment.create({
     content: req.body.content,
     author: req.user.id,
-    post: postId
+    post: postId,
+    isApproved: true, // Auto-approve for now
+    approvedAt: Date.now()
   });
 
   blogPost.comments.push(comment._id);
@@ -34,7 +36,10 @@ exports.addComment = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/blog/:postId/comments
 // @access  Public
 exports.getComments = asyncHandler(async (req, res, next) => {
-  const comments = await Comment.find({ post: req.params.postId })
+  const comments = await Comment.find({ 
+    post: req.params.postId,
+    isApproved: true // Only show approved comments
+  })
     .populate('author', 'username profilePicture')
     .sort({ createdAt: -1 });
 
@@ -58,10 +63,30 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Not authorized to delete this comment', 401));
   }
 
-  await comment.remove();
+  await Comment.findByIdAndDelete(req.params.id);
 
   res.status(200).json({
     success: true,
     data: {}
+  });
+});
+
+// @desc    Approve a comment (Admin)
+// @route   PUT /api/v1/comments/:id/approve
+// @access  Admin
+exports.approveComment = asyncHandler(async (req, res, next) => {
+  const comment = await Comment.findById(req.params.id);
+  
+  if (!comment) {
+    return next(new ErrorResponse(`No comment with id ${req.params.id}`, 404));
+  }
+
+  comment.isApproved = true;
+  comment.approvedAt = Date.now();
+  await comment.save();
+
+  res.status(200).json({
+    success: true,
+    data: comment
   });
 });

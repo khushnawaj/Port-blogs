@@ -1,74 +1,34 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { Link } from "react-router-dom";
 import "./Projects.scss";
+import { useAuth } from "../contexts/AuthContext";
+import { getMyPortfolio } from "../services/portfolioServices";
 
 export default function Projects() {
+  const { currentUser } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    technologies: "",
-    image: "",
-    liveUrl: "",
-    sourceUrl: "",
-  });
 
-  // Fetch projects
+  // Fetch projects from Portfolio
   useEffect(() => {
     const fetchProjects = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/projects");
-        // controller should return { success, data }
-        setProjects(res.data.data || res.data);
-      } catch (err) {
-        console.error("Error fetching projects:", err);
-      } finally {
+      if (currentUser) {
+        try {
+          const res = await getMyPortfolio();
+          if (res.data && res.data.projects) {
+            setProjects(res.data.projects);
+          }
+        } catch (err) {
+          console.error("Error fetching portfolio projects:", err);
+        } finally {
+          setLoading(false);
+        }
+      } else {
         setLoading(false);
       }
     };
     fetchProjects();
-  }, []);
-
-  // Handle input change
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Handle form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token"); // assumes login sets this
-      const res = await axios.post(
-        "http://localhost:5000/api/projects",
-        {
-          ...formData,
-          technologies: formData.technologies
-            .split(",")
-            .map((tech) => tech.trim()),
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setProjects([...projects, res.data]); // add new project to list
-      setShowModal(false);
-      setFormData({
-        title: "",
-        description: "",
-        technologies: "",
-        image: "",
-        liveUrl: "",
-        sourceUrl: "",
-      });
-    } catch (err) {
-      console.error("Error creating project:", err);
-      alert("Failed to create project. Check console for details.");
-    }
-  };
+  }, [currentUser]);
 
   if (loading) {
     return (
@@ -81,54 +41,59 @@ export default function Projects() {
   return (
     <div className="projects">
       <div className="projects-header">
-        <h1>My Projects</h1>
+        <h1>{currentUser ? "My Projects" : "Projects"}</h1>
         <p>
-          Explore my recent work showcasing modern web development solutions and
-          design principles.
+          {currentUser
+            ? "Here are the projects you've added to your portfolio."
+            : "Explore recent work showcasing modern web development solutions."}
         </p>
-        <button className="create-btn" onClick={() => setShowModal(true)}>
-          + Create Project
-        </button>
+
+        {currentUser && (
+          <Link to="/portfolio-builder" className="create-btn">
+            Manage Projects / Add New
+          </Link>
+        )}
       </div>
 
       <div className="projects-grid">
-        {projects.length === 0 ? (
-          <p>No projects available.</p>
+        {!currentUser ? (
+          <div className="empty-state">
+            <p>Please <Link to="/login">login</Link> to view your projects.</p>
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="empty-state">
+            <p>No projects found in your portfolio.</p>
+            <Link to="/portfolio-builder">Add your first project</Link>
+          </div>
         ) : (
-          projects.map((project) => (
-            <div key={project._id} className="projects-card">
+          projects.map((project, index) => (
+            <div key={index} className="projects-card">
+              {/* Fallback image or project.image if exists in schema (Step 4 didn't used to have image, but model might) */}
               <div className="projects-card-image">
-                <img src={project.image} alt={project.title} />
+                {/* Only show image div if image exists or use placeholder pattern */}
+                <div className="placeholder-image" style={{ background: '#f0f0f0', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
+                  {project.title} Preview
+                </div>
               </div>
               <div className="projects-card-content">
                 <h3>{project.title}</h3>
                 <p>{project.description}</p>
 
                 <div className="tech-list">
-                  {project.technologies?.map((tech, index) => (
-                    <span key={index}>{tech}</span>
+                  {project.techStack?.map((tech, i) => (
+                    <span key={i}>{tech}</span>
                   ))}
                 </div>
 
                 <div className="projects-card-actions">
-                  {project.liveUrl && (
+                  {project.link && (
                     <a
-                      href={project.liveUrl}
+                      href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="demo"
                     >
-                      Live Demo
-                    </a>
-                  )}
-                  {project.sourceUrl && (
-                    <a
-                      href={project.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="code"
-                    >
-                      View Code
+                      View Project
                     </a>
                   )}
                 </div>
@@ -137,68 +102,6 @@ export default function Projects() {
           ))
         )}
       </div>
-
-      {/* Modal */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Create Project</h2>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="title"
-                placeholder="Project Title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-              />
-              <textarea
-                name="description"
-                placeholder="Project Description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="technologies"
-                placeholder="Technologies (comma separated)"
-                value={formData.technologies}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="image"
-                placeholder="Image URL"
-                value={formData.image}
-                onChange={handleChange}
-              />
-              <input
-                type="text"
-                name="liveUrl"
-                placeholder="Live Demo URL"
-                value={formData.liveUrl}
-                onChange={handleChange}
-              />
-              <input
-                type="text"
-                name="sourceUrl"
-                placeholder="Source Code URL"
-                value={formData.sourceUrl}
-                onChange={handleChange}
-              />
-
-              <div className="modal-actions">
-                <button type="submit">Save</button>
-                <button type="button" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

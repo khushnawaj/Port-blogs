@@ -83,6 +83,9 @@ exports.getBlogPost = asyncHandler(async (req, res, next) => {
     }
   }
 
+  // Increment view count (don't use lean() for this update)
+  await BlogPost.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+  
   res.status(200).json({
     success: true,
     data: blogPost
@@ -176,7 +179,7 @@ exports.deleteBlogPost = asyncHandler(async (req, res, next) => {
     );
   }
 
-  await blogPost.remove();
+  await BlogPost.findByIdAndDelete(req.params.id);
 
   res.status(200).json({
     success: true,
@@ -275,5 +278,39 @@ exports.getUserBlogs = asyncHandler(async (req, res, next) => {
     success: true,
     count: posts.length,
     data: posts
+  });
+});
+
+// @desc    Like/Unlike a blog post
+// @route   PUT /api/v1/blog/:id/like
+// @access  Private
+exports.toggleLike = asyncHandler(async (req, res, next) => {
+  const blogPost = await BlogPost.findById(req.params.id);
+
+  if (!blogPost) {
+    return next(
+      new ErrorResponse(`Blog post not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Check if user already liked the post
+  const likeIndex = blogPost.likes.indexOf(req.user.id);
+
+  if (likeIndex > -1) {
+    // Unlike: remove user from likes array
+    blogPost.likes.splice(likeIndex, 1);
+  } else {
+    // Like: add user to likes array
+    blogPost.likes.push(req.user.id);
+  }
+
+  await blogPost.save();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      likes: blogPost.likes.length,
+      isLiked: likeIndex === -1
+    }
   });
 });

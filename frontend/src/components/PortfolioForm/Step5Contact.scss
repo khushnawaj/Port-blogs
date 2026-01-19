@@ -1,0 +1,94 @@
+.step5-contact {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  .contact-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .input-icon {
+        position: absolute;
+        left: 1rem;
+        font-size: 1.2rem;
+        color: #667eea;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        background: white;
+
+        &:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        &::placeholder {
+          color: #aaa;
+        }
+
+        &:hover {
+          border-color: #b8c0ea;
+        }
+      }
+    }
+  }
+
+  .completion-message {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border-radius: 12px;
+    border: 2px dashed #667eea;
+    text-align: center;
+
+    p {
+      margin: 0;
+      color: #667eea;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .step5-contact {
+    .contact-fields {
+      .input-group {
+        input {
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+}

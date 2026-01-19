@@ -1,40 +1,30 @@
 const express = require("express");
 const {
+  getMyPortfolio,
   getPortfolio,
-  getEducation,
-  addEducation,
-  updateEducation,
-  deleteEducation,
-   clonePortfolio,
-  // Similar imports for experience, projects, skills
+  upsertPortfolio,
+  deletePortfolio,
+  uploadImage
 } = require("../controllers/portfolioController");
+const upload = require('../middleware/upload');
+
 const { protect } = require("../middleware/auth");
 
 const router = express.Router();
-const {
-  getExperience,
-  addExperience,
-  // ... other experience handlers
-} = require('../controllers/portfolioController');
 
-router.route("/:userId").get(getPortfolio);
+// Get logged-in user's portfolio
+router.get("/me", protect, getMyPortfolio);
 
-// Education routes
-router.route("/education").get(getEducation).post(protect, addEducation);
+// Create or update portfolio
+router.post("/", protect, upsertPortfolio);
 
-router
-  .route('/experience')
-  .get(getExperience)
-  .post(protect, addExperience);
-  // In portfolioRoutes.js
-router.post('/:userId/clone', protect, clonePortfolio);
+// Upload portfolio image
+router.post("/upload-image", protect, upload, uploadImage);
 
-router
-  .route("/education/:id")
-  .get(getEducation)
-  .put(protect, updateEducation)
-  .delete(protect, deleteEducation);
+// Delete portfolio
+router.delete("/", protect, deletePortfolio);
 
-// Similar routes for experience, projects, skills would follow...
+// Get portfolio by userId (public)
+router.get("/:userId", getPortfolio);
 
 module.exports = router;

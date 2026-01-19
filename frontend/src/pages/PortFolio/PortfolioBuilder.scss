@@ -1,0 +1,64 @@
+@import '../../styles/variables';
+
+.portfolio-builder {
+  font-family: $font-main;
+  background: $beige;
+  min-height: 100vh;
+  padding: $spacing-xl $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: $spacing-lg;
+
+  // Gradient animated background for header section
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 25vh;
+    background: linear-gradient(270deg, $mango-yellow, $dark-grey, $beige, $mango-yellow);
+    background-size: 600% 600%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -1;
+  }
+
+  h1 {
+    font-family: $font-heading;
+    margin-bottom: $spacing-lg;
+    color: $secondary;
+    text-align: center;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    animation: pulse 2s infinite;
+  }
+
+  // Form container
+  .form-wrapper {
+    background: $pure-white;
+    padding: $spacing-lg;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba($dark-grey, 0.1);
+    width: 100%;
+    max-width: 800px;
+    transition: $transition-fast;
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba($dark-grey, 0.15);
+    }
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .portfolio-builder {
+    padding: $spacing-lg $spacing-sm;
+
+    h1 {
+      font-size: 2rem;
+    }
+  }
+}
+

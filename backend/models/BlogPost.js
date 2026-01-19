@@ -38,6 +38,16 @@ const BlogPostSchema = new mongoose.Schema({
       ref: 'Comment'
     }
   ],
+  likes: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User'
+    }
+  ],
+  views: {
+    type: Number,
+    default: 0
+  },
   publishedAt: {
     type: Date
   },
@@ -59,6 +69,11 @@ BlogPostSchema.virtual('commentsCount', {
   localField: '_id',
   foreignField: 'post',
   count: true
+});
+
+// Virtual for likes count
+BlogPostSchema.virtual('likesCount').get(function() {
+  return this.likes ? this.likes.length : 0;
 });
 
 // Update the updatedAt field before saving

@@ -1,21 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import api from '../../services/api';
+import { getMyPortfolio } from '../../services/portfolioServices';
 import './ProfilePage.scss';
-
-// Icons
 import { FiEdit, FiTrash2, FiCheck, FiX, FiUpload, FiEye, FiClock, FiFileText } from 'react-icons/fi';
+import { FaGithub, FaLinkedin, FaGlobe } from 'react-icons/fa';
 
 const ProfilePage = () => {
   const { currentUser, setCurrentUser } = useAuth();
-  const [formData, setFormData] = useState({
-    username: '',
-    name: '',
-    bio: '',
-    github: '',
-    linkedin: '',
-    website: ''
-  });
+  const [portfolio, setPortfolio] = useState(null);
   const [editingField, setEditingField] = useState(null);
   const [stats, setStats] = useState({
     solved: 0,
@@ -30,31 +24,14 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (currentUser) {
-      setFormData({
-        username: currentUser.username || '',
-        name: currentUser.name || '',
-        bio: currentUser.bio || '',
-        github: currentUser.github || '',
-        linkedin: currentUser.linkedin || '',
-        website: currentUser.website || ''
-      });
-       if (currentUser.profileImage) {
-      setAvatarPreview(currentUser.profileImage);
-    }
-      
-      // Set avatar preview if exists
-      
-      // if (currentUser.profilePicture && currentUser.profilePicture !== 'default.jpg') {
-      //   setAvatarPreview(`${process.env.REACT_APP_API_URL}/uploads/${currentUser.profilePicture}`);
-      // }
+      if (currentUser.profileImage) {
+        setAvatarPreview(currentUser.profileImage);
+      }
 
-      // Mock stats
-      setStats({
-        solved: 123,
-        submissions: 423,
-        acceptance: 82.4,
-        posts: 9
-      });
+      // Fetch Portfolio
+      getMyPortfolio()
+        .then(res => setPortfolio(res.data))
+        .catch(err => console.log("No portfolio found"));
 
       // Fetch user's blogs
       fetchUserBlogs();
@@ -70,20 +47,10 @@ const ProfilePage = () => {
     }
   };
 
-  const handleUpdate = async (field) => {
-    try {
-      const { data } = await api.put('/users/profile', { [field]: formData[field] });
-      setCurrentUser(data.user);
-      setEditingField(null);
-    } catch (err) {
-      console.error('Failed to update profile:', err);
-    }
-  };
-
   const handleDeleteBlog = async (blogId) => {
     if (window.confirm('Are you sure you want to delete this blog post?')) {
       try {
-        await api.delete(`/blogs/${blogId}`);
+        await api.delete(`/blog/${blogId}`);
         setUserBlogs(userBlogs.filter(blog => blog._id !== blogId));
       } catch (err) {
         console.error('Failed to delete blog:', err);
@@ -122,54 +89,6 @@ const ProfilePage = () => {
     fileInputRef.current.click();
   };
 
-  const FieldContainer = ({ label, value, fieldName, isTextarea = false }) => (
-    <div className={`field-container ${editingField === fieldName ? 'editing' : ''}`}>
-      <div className="field-header">
-        <label>{label}</label>
-        {editingField !== fieldName && (
-          <button 
-            className="edit-icon"
-            onClick={() => setEditingField(fieldName)}
-            aria-label={`Edit ${label}`}
-          >
-            <FiEdit size={14} />
-          </button>
-        )}
-      </div>
-      
-      {editingField === fieldName ? (
-        <div className="edit-mode">
-          {isTextarea ? (
-            <textarea
-              value={formData[fieldName]}
-              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
-              autoFocus
-            />
-          ) : (
-            <input
-              type="text"
-              value={formData[fieldName]}
-              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
-              autoFocus
-            />
-          )}
-          <div className="edit-actions">
-            <button className="cancel" onClick={() => setEditingField(null)}>
-              <FiX size={14} /> Cancel
-            </button>
-            <button className="save" onClick={() => handleUpdate(fieldName)}>
-              <FiCheck size={14} /> Save
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="field-value">
-          {value || <span className="empty">Not specified</span>}
-        </div>
-      )}
-    </div>
-  );
-
   const filteredBlogs = userBlogs.filter(blog => {
     if (activeBlogTab === 'published') return blog.status === 'published';
     if (activeBlogTab === 'pending') return blog.status === 'pending';
@@ -193,7 +112,7 @@ const ProfilePage = () => {
         <aside className="profile-sidebar">
           <div className="user-card">
             <div className="avatar-container">
-              <div 
+              <div
                 className="avatar"
                 style={{ backgroundImage: avatarPreview ? `url(${avatarPreview})` : '' }}
               >
@@ -213,85 +132,91 @@ const ProfilePage = () => {
             <h2>{currentUser?.username}</h2>
             <div className="user-badge">{currentUser?.role}</div>
           </div>
-          
+
           <div className="stats-grid">
             <div className="stat-card">
-              <div className="stat-value">{stats.solved}</div>
-              <div className="stat-label">Solved</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{stats.submissions}</div>
-              <div className="stat-label">Submissions</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{stats.acceptance}%</div>
-              <div className="stat-label">Acceptance</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{stats.posts}</div>
+              <div className="stat-value">{userBlogs.length}</div>
               <div className="stat-label">Posts</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">
+                {userBlogs.reduce((acc, blog) => acc + (blog.views || 0), 0)}
+              </div>
+              <div className="stat-label">Total Views</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">
+                {userBlogs.reduce((acc, blog) => acc + (Array.isArray(blog.likes) ? blog.likes.length : 0), 0)}
+              </div>
+              <div className="stat-label">Total Likes</div>
             </div>
           </div>
         </aside>
 
-        {/* Main Content */}
         <main className="profile-content">
           <section className="profile-section">
-            <h3>Profile Information</h3>
-            <FieldContainer 
-              label="Username" 
-              value={formData.username} 
-              fieldName="username" 
-            />
-            <FieldContainer 
-              label="Name" 
-              value={formData.name} 
-              fieldName="name" 
-            />
-            <FieldContainer 
-              label="Bio" 
-              value={formData.bio} 
-              fieldName="bio" 
-              isTextarea={true}
-            />
-          </section>
-
-          <section className="profile-section">
-            <h3>Social Links</h3>
-            <FieldContainer 
-              label="GitHub" 
-              value={formData.github} 
-              fieldName="github" 
-            />
-            <FieldContainer 
-              label="LinkedIn" 
-              value={formData.linkedin} 
-              fieldName="linkedin" 
-            />
-            <FieldContainer 
-              label="Website" 
-              value={formData.website} 
-              fieldName="website" 
-            />
+            <div className="section-header">
+              <h3>Portfolio Details</h3>
+              <Link to="/portfolio-builder" className="btn-edit-portfolio">
+                <FiEdit /> Edit Portfolio
+              </Link>
+            </div>
+            {portfolio ? (
+              <div className="portfolio-preview">
+                <div className="preview-item">
+                  <label>Bio</label>
+                  <p>{portfolio.about?.bio || "No bio added."}</p>
+                </div>
+                <div className="preview-item">
+                  <label>Skills</label>
+                  <p>{portfolio.about?.skills?.join(', ') || "No skills added."}</p>
+                </div>
+                <div className="preview-item social-links-preview">
+                  <label>Socials</label>
+                  <div className="links">
+                    {portfolio.contact?.github && (
+                      <a href={portfolio.contact.github} target="_blank" rel="noreferrer" title="GitHub">
+                        <FaGithub size={20} />
+                      </a>
+                    )}
+                    {portfolio.contact?.linkedin && (
+                      <a href={portfolio.contact.linkedin} target="_blank" rel="noreferrer" title="LinkedIn">
+                        <FaLinkedin size={20} />
+                      </a>
+                    )}
+                    {portfolio.contact?.website && (
+                      <a href={portfolio.contact.website} target="_blank" rel="noreferrer" title="Website">
+                        <FaGlobe size={20} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="no-portfolio">
+                <p>You haven't created your portfolio yet.</p>
+                <Link to="/portfolio-builder" className="btn-create-portfolio">Build Now</Link>
+              </div>
+            )}
           </section>
 
           <section className="profile-section">
             <div className="section-header">
               <h3>My Blog Posts</h3>
               <div className="blog-tabs">
-                <button 
+                <button
                   className={`tab-btn ${activeBlogTab === 'published' ? 'active' : ''}`}
                   onClick={() => setActiveBlogTab('published')}
                 >
                   <FiEye size={14} /> Published
                 </button>
-                <button 
+                <button
                   className={`tab-btn ${activeBlogTab === 'pending' ? 'active' : ''}`}
                   onClick={() => setActiveBlogTab('pending')}
                 >
                   <FiClock size={14} /> Pending
                 </button>
-                <button 
+                <button
                   className={`tab-btn ${activeBlogTab === 'drafts' ? 'active' : ''}`}
                   onClick={() => setActiveBlogTab('drafts')}
                 >
@@ -322,13 +247,13 @@ const ProfilePage = () => {
                       </div>
                     </div>
                     <div className="blog-actions">
-                      <button 
+                      <button
                         className="action-btn edit"
-                        onClick={() => window.location.href = `/blogs/edit/${blog._id}`}
+                        onClick={() => window.location.href = `/blog/Create-Blog?edit=${blog._id}`}
                       >
                         <FiEdit size={16} />
                       </button>
-                      <button 
+                      <button
                         className="action-btn delete"
                         onClick={() => handleDeleteBlog(blog._id)}
                       >

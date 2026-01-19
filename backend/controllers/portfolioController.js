@@ -1,133 +1,112 @@
-const ErrorResponse = require('../utils/errorResponse');
-const asyncHandler = require('../middleware/async');
-const Education = require('../models/Education');
-const Experience = require('../models/Experience');
-const Project = require('../models/Project');
-const Skill = require('../models/Skill');
+const Portfolio = require("../models/PortfoliModel");
+const asyncHandler = require("../middleware/async");
+const ErrorResponse = require("../utils/errorResponse");
 
-// ================== PORTFOLIO ================== //
-exports.getPortfolio = asyncHandler(async (req, res, next) => {
-  const userId = req.params.userId;
+// @desc    Get user's portfolio
+// @route   GET /api/v1/portfolio/me
+// @access  Private
+exports.getMyPortfolio = asyncHandler(async (req, res, next) => {
+  const portfolio = await Portfolio.findOne({ userId: req.user.id });
 
-  const [education, experience, projects, skills] = await Promise.all([
-    Education.find({ userId }),
-    Experience.find({ userId }),
-    Project.find({ userId }),
-    Skill.find({ userId })
-  ]);
+  if (!portfolio) {
+    return res.status(200).json({
+      success: true,
+      data: null,
+      message: "No portfolio found. Create one to get started!"
+    });
+  }
 
   res.status(200).json({
     success: true,
-    data: { education, experience, projects, skills }
+    data: portfolio
   });
 });
 
-// ================== EDUCATION ================== //
-exports.getEducation = asyncHandler(async (req, res, next) => {
-  if (req.params.id) {
-    const education = await Education.findById(req.params.id);
-    if (!education) {
-      return next(new ErrorResponse(`Education not found with id ${req.params.id}`, 404));
-    }
-    return res.status(200).json({ success: true, data: education });
+// @desc    Get portfolio by userId
+// @route   GET /api/v1/portfolio/:userId
+// @access  Public
+exports.getPortfolio = asyncHandler(async (req, res, next) => {
+  const portfolio = await Portfolio.findOne({ userId: req.params.userId })
+    .populate('userId', 'username email profileImage');
+
+  if (!portfolio) {
+    return next(
+      new ErrorResponse(`Portfolio not found for user ${req.params.userId}`, 404)
+    );
   }
 
-  const education = await Education.find();
-  res.status(200).json({ success: true, count: education.length, data: education });
+  res.status(200).json({
+    success: true,
+    data: portfolio
+  });
 });
 
-exports.addEducation = asyncHandler(async (req, res) => {
-  req.body.userId = req.user.id;
-  const education = await Education.create(req.body);
-  res.status(201).json({ success: true, data: education });
-});
+// @desc    Create or Update portfolio
+// @route   POST /api/v1/portfolio
+// @access  Private
+exports.upsertPortfolio = asyncHandler(async (req, res, next) => {
+  const userId = req.user.id;
 
-exports.updateEducation = asyncHandler(async (req, res, next) => {
-  let education = await Education.findById(req.params.id);
-  if (!education) return next(new ErrorResponse(`Education not found with id ${req.params.id}`, 404));
+  // Check if portfolio exists
+  let portfolio = await Portfolio.findOne({ userId });
 
-  if (education.userId.toString() !== req.user.id) {
-    return next(new ErrorResponse(`Not authorized to update this record`, 401));
+  if (portfolio) {
+    // Update existing portfolio
+    portfolio = await Portfolio.findOneAndUpdate(
+      { userId },
+      { ...req.body, userId },
+      { new: true, runValidators: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Portfolio updated successfully",
+      data: portfolio
+    });
   }
 
-  education = await Education.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-  res.status(200).json({ success: true, data: education });
+  // Create new portfolio
+  portfolio = await Portfolio.create({
+    ...req.body,
+    userId
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Portfolio created successfully",
+    data: portfolio
+  });
 });
 
-exports.deleteEducation = asyncHandler(async (req, res, next) => {
-  const education = await Education.findById(req.params.id);
-  if (!education) return next(new ErrorResponse(`Education not found with id ${req.params.id}`, 404));
+// @desc    Delete portfolio
+// @route   DELETE /api/v1/portfolio
+// @access  Private
+exports.deletePortfolio = asyncHandler(async (req, res, next) => {
+  const portfolio = await Portfolio.findOne({ userId: req.user.id });
 
-  if (education.userId.toString() !== req.user.id) {
-    return next(new ErrorResponse(`Not authorized to delete this record`, 401));
+  if (!portfolio) {
+    return next(new ErrorResponse("Portfolio not found", 404));
   }
 
-  await education.deleteOne();
-  res.status(200).json({ success: true, data: {} });
+  await Portfolio.findByIdAndDelete(portfolio._id);
+
+  res.status(200).json({
+    success: true,
+    message: "Portfolio deleted successfully",
+    data: {}
+  });
 });
 
-// ================== EXPERIENCE ================== //
-exports.getExperience = asyncHandler(async (req, res, next) => {
-  if (req.params.id) {
-    const experience = await Experience.findById(req.params.id);
-    if (!experience) {
-      return next(new ErrorResponse(`Experience not found with id ${req.params.id}`, 404));
-    }
-    return res.status(200).json({ success: true, data: experience });
+// @desc    Upload portfolio image
+// @route   POST /api/v1/portfolio/upload-image
+// @access  Private
+exports.uploadImage = asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    return next(new ErrorResponse('Please upload a file', 400));
   }
 
-  const experiences = await Experience.find();
-  res.status(200).json({ success: true, count: experiences.length, data: experiences });
-});
-
-exports.addExperience = asyncHandler(async (req, res) => {
-  req.body.userId = req.user.id;
-  const experience = await Experience.create(req.body);
-  res.status(201).json({ success: true, data: experience });
-});
-
-exports.updateExperience = asyncHandler(async (req, res, next) => {
-  let experience = await Experience.findById(req.params.id);
-  if (!experience) return next(new ErrorResponse(`Experience not found with id ${req.params.id}`, 404));
-
-  if (experience.userId.toString() !== req.user.id) {
-    return next(new ErrorResponse(`Not authorized to update this record`, 401));
-  }
-
-  experience = await Experience.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-  res.status(200).json({ success: true, data: experience });
-});
-
-exports.deleteExperience = asyncHandler(async (req, res, next) => {
-  const experience = await Experience.findById(req.params.id);
-  if (!experience) return next(new ErrorResponse(`Experience not found with id ${req.params.id}`, 404));
-
-  if (experience.userId.toString() !== req.user.id) {
-    return next(new ErrorResponse(`Not authorized to delete this record`, 401));
-  }
-
-  await experience.deleteOne();
-  res.status(200).json({ success: true, data: {} });
-});
-
-// ================== CLONE PORTFOLIO ================== //
-exports.clonePortfolio = asyncHandler(async (req, res, next) => {
-  const sourceUserId = req.params.userId;
-  const newUserId = req.user.id;
-
-  const [edu, exp, proj, skl] = await Promise.all([
-    Education.find({ userId: sourceUserId }),
-    Experience.find({ userId: sourceUserId }),
-    Project.find({ userId: sourceUserId }),
-    Skill.find({ userId: sourceUserId })
-  ]);
-
-  await Promise.all([
-    Education.insertMany(edu.map(e => ({ ...e.toObject(), _id: undefined, userId: newUserId }))),
-    Experience.insertMany(exp.map(e => ({ ...e.toObject(), _id: undefined, userId: newUserId }))),
-    Project.insertMany(proj.map(p => ({ ...p.toObject(), _id: undefined, userId: newUserId }))),
-    Skill.insertMany(skl.map(s => ({ ...s.toObject(), _id: undefined, userId: newUserId })))
-  ]);
-
-  res.status(201).json({ success: true, message: 'Portfolio cloned successfully' });
+  res.status(200).json({
+    success: true,
+    data: `/uploads/${req.file.filename}`
+  });
 });

@@ -183,7 +183,8 @@
         transform: translateY(0);
       }
 
-      a, button {
+      a,
+      button {
         display: block;
         width: 100%;
         padding: 0.5rem 1rem;
@@ -207,5 +208,66 @@
         text-align: left;
       }
     }
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0.5rem 1rem;
+    height: 60px;
+  }
+
+  .header-nav {
+    gap: 0.5rem;
+    position: fixed;
+    /* Optional: Bottom nav for mobile? Or keep top */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba($midnight-black, 0.98);
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid rgba($primary, 0.2);
+    z-index: 1001;
+
+    /* If keeping top nav, remove fixed/bottom styles. But bottom nav is better for mobile app feel */
+    /* Let's keep it simple top nav for now to match "Portfolio Website" feel */
+    position: static;
+    width: auto;
+    background: transparent;
+    border: none;
+    padding: 0;
+
+    .nav-icon-wrapper {
+      padding: 0.4rem;
+
+      .nav-label {
+        display: none !important;
+      }
+
+      .nav-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .header-user {
+    gap: 0;
+
+    .header-username {
+      display: none;
+    }
+
+    .header-user-avatar {
+      width: 32px;
+      height: 32px;
+      border-width: 1px;
+    }
+  }
+
+  .header-auth .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
   }
 }

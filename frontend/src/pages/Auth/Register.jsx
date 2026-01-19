@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { register } from '../../services/auth';
 import './Register.scss';
@@ -31,13 +32,13 @@ const Register = () => {
 
     // Client-side validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match");
+      toast.error("Passwords don't match");
       setLoading(false);
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
       setLoading(false);
       return;
     }
@@ -52,13 +53,19 @@ const Register = () => {
       // Store token and update auth state
       localStorage.setItem('token', token);
       setCurrentUser(user);
-      
-      // Redirect to dashboard or home
-navigate(user.role === 'admin' ? '/admin' : '/');
+
+      // Redirect to portfolio builder for new users
+      toast.success("Account created successfully!");
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/portfolio-builder');
+      }
 
     } catch (err) {
       console.error('Registration error:', err);
-setError(err.response?.data?.error || err.message || 'Registration failed');
+      const msg = err.response?.data?.error || err.message || 'Registration failed';
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -68,8 +75,6 @@ setError(err.response?.data?.error || err.message || 'Registration failed');
     <div className="register-container">
       <div className="register-card">
         <h2>Create Account</h2>
-        
-        {error && <div className="alert error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -123,8 +128,8 @@ setError(err.response?.data?.error || err.message || 'Registration failed');
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="submit-btn"
             disabled={loading}
           >

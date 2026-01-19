@@ -38,15 +38,36 @@
     flex: 1;
     animation: fadeInUp 1s ease-out;
 
+    .welcome-badge {
+      display: inline-block;
+      background: rgba($primary, 0.1);
+      color: $primary;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-bottom: $spacing-sm;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
     h1 {
       font-family: $font-heading;
       font-size: 3.5rem;
       color: $midnight-black;
-      margin-bottom: $spacing-md;
+      margin-bottom: $spacing-sm;
+      /* Reduced margin */
       line-height: 1.2;
       background: linear-gradient(90deg, $midnight-black 0%, $primary 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .tagline {
+      font-size: 1.6rem;
+      color: $secondary;
+      margin-bottom: $spacing-md;
+      font-weight: 500;
     }
 
     p {
@@ -69,6 +90,15 @@
       border-radius: 16px;
       box-shadow: 0 20px 40px rgba($midnight-black, 0.2);
       border: 8px solid $pure-white;
+      transition: all 0.5s ease;
+
+      &.profile-mode {
+        max-width: 400px;
+        border-radius: 50%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        border: 8px solid $primary;
+      }
     }
 
     &::after {
@@ -95,8 +125,13 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-20px); }
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-20px);
+  }
 }
 
 @keyframes fadeInUp {
@@ -104,6 +139,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

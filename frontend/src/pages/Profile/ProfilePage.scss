@@ -75,6 +75,7 @@
           right: 0;
           width: 32px;
           height: 32px;
+          z-index: 5; // Ensure visibility
           background: var(--primary);
           border: 2px solid white;
           border-radius: 50%;
@@ -154,10 +155,101 @@
       h3 {
         font-size: 18px;
         font-weight: 600;
-        margin: 0 0 20px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--border);
+        margin: 0;
         color: var(--text);
+      }
+
+      .btn-edit-portfolio {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary);
+        color: white;
+        padding: 6px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+
+        &:hover {
+          background: darken(#ffa116, 5%);
+          transform: translateY(-1px);
+        }
+      }
+    }
+
+    .portfolio-preview {
+      .preview-item {
+        margin-bottom: 16px;
+
+        label {
+          display: block;
+          font-weight: 600;
+          color: var(--text-light);
+          margin-bottom: 6px;
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        p {
+          color: var(--text);
+          line-height: 1.6;
+          font-size: 0.95rem;
+        }
+      }
+
+      .social-links-preview .links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        a {
+          color: var(--primary);
+          text-decoration: none;
+          border: 1px solid var(--primary);
+          padding: 6px 12px;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          transition: all 0.2s;
+
+          &:hover {
+            background: var(--primary);
+            color: white;
+          }
+        }
+      }
+    }
+
+    .no-portfolio {
+      text-align: center;
+      padding: 3rem;
+      background: #fafafa;
+      border-radius: 8px;
+      border: 1px dashed #ddd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+
+      p {
+        color: #777;
+        margin: 0;
+      }
+
+      .btn-create-portfolio {
+        background: var(--primary);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: transform 0.2s;
+
+        &:hover {
+          transform: translateY(-2px);
+        }
       }
     }
 
@@ -215,7 +307,8 @@
       .edit-mode {
         animation: slideIn 0.2s ease-out;
 
-        input, textarea {
+        input,
+        textarea {
           width: 100%;
           padding: 8px 12px;
           border: 1px solid var(--border);
@@ -292,8 +385,23 @@
       .blog-tabs {
         display: flex;
         gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        /* Scrollbar space */
+
+        /* Hide scrollbar for cleaner look if desired, but functionality is key */
+        &::-webkit-scrollbar {
+          height: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #ddd;
+          border-radius: 4px;
+        }
 
         .tab-btn {
+          flex-shrink: 0;
+          white-space: nowrap;
           padding: 6px 12px;
           background: none;
           border: none;
@@ -453,6 +561,50 @@
       }
     }
   }
+
+  /* Better Mobile Responsiveness */
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .profile-layout {
+      gap: 16px;
+    }
+
+    .profile-content {
+      padding: 16px;
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+
+        .blog-tabs {
+          width: 100%;
+          overflow-x: auto; // Allow scroll if tabs are wide
+          padding-bottom: 4px;
+        }
+      }
+
+      .blog-list {
+        .blog-item {
+          flex-direction: column;
+          gap: 12px;
+
+          .blog-actions {
+            width: 100%;
+            justify-content: flex-end;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+          }
+
+          .blog-content .blog-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+      }
+    }
+  }
 }
 
 @keyframes slideIn {
@@ -460,6 +612,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

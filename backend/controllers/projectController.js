@@ -1,74 +1,39 @@
 const Project = require("../models/Project");
 const asyncHandler = require("../middleware/async");
-const ErrorResponse = require("../utils/errorResponse");
 
-// @desc    Get all projects
-// @route   GET /api/projects
-// @access  Public
-exports.getProjects = asyncHandler(async (req, res, next) => {
-  const projects = await Project.find().populate("userId", "name email");
-  res.status(200).json(projects);
+// Get all projects of user
+exports.getProjects = asyncHandler(async (req, res) => {
+  const projects = await Project.find({ userId: req.user.id });
+  res.status(200).json({ success: true, data: projects });
 });
 
-// @desc    Get single project
-// @route   GET /api/projects/:id
-// @access  Public
-exports.getProject = asyncHandler(async (req, res, next) => {
-  const project = await Project.findById(req.params.id).populate("userId", "name email");
-  if (!project) {
-    return next(new ErrorResponse(`Project not found with id of ${req.params.id}`, 404));
-  }
-  res.status(200).json(project);
-});
-
-// @desc    Create project
-// @route   POST /api/projects
-// @access  Private (any logged-in user)
-exports.createProject = asyncHandler(async (req, res, next) => {
-  req.body.userId = req.user.id; // attach logged-in user
+// Add new project
+exports.addProject = asyncHandler(async (req, res) => {
+  req.body.userId = req.user.id;
   const project = await Project.create(req.body);
-  res.status(201).json(project);
+  res.status(201).json({ success: true, data: project });
 });
 
-// @desc    Update project
-// @route   PUT /api/projects/:id
-// @access  Private (owner only)
-exports.updateProject = asyncHandler(async (req, res, next) => {
+// Update project
+exports.updateProject = asyncHandler(async (req, res) => {
   let project = await Project.findById(req.params.id);
 
-  if (!project) {
-    return next(new ErrorResponse(`Project not found with id of ${req.params.id}`, 404));
+  if (!project || project.userId.toString() !== req.user.id) {
+    return res.status(404).json({ success: false, message: "Not found or unauthorized" });
   }
 
-  // Ensure user owns project
-  if (project.userId.toString() !== req.user.id) {
-    return next(new ErrorResponse(`Not authorized to update this project`, 401));
-  }
-
-  project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  res.status(200).json(project);
+  project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  res.status(200).json({ success: true, data: project });
 });
 
-// @desc    Delete project
-// @route   DELETE /api/projects/:id
-// @access  Private (owner only)
-exports.deleteProject = asyncHandler(async (req, res, next) => {
+// Delete project
+exports.deleteProject = asyncHandler(async (req, res) => {
   const project = await Project.findById(req.params.id);
 
-  if (!project) {
-    return next(new ErrorResponse(`Project not found with id of ${req.params.id}`, 404));
-  }
-
-  // Ensure user owns project
-  if (project.userId.toString() !== req.user.id) {
-    return next(new ErrorResponse(`Not authorized to delete this project`, 401));
+  if (!project || project.userId.toString() !== req.user.id) {
+    return res.status(404).json({ success: false, message: "Not found or unauthorized" });
   }
 
   await project.deleteOne();
-
   res.status(200).json({ success: true, data: {} });
 });
